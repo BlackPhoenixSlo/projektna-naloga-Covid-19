@@ -2,4 +2,4 @@
 projektna pri podatkovne baze
 
 
-![ER DIAGRAM](Blank_diagram.png)
+![ER DIAGRAM](ER_diagram.png)
