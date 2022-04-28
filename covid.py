@@ -28,8 +28,7 @@ def static(filename):
 
 @get('/')
 def index():
-    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
-    return template('komitenti.html', osebe=cur)
+    return template('osnova.html')
 
 
 ######################################################################
