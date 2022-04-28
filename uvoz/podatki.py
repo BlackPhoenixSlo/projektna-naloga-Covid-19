@@ -19,6 +19,15 @@ def ustvari_tabelo():
     """)
     conn.commit()
 
+def ustvari_tabelo_cepiva():
+    cur.execute("""
+     CREATE TABLE cepiva (
+            id_cepiva TEXT PRIMARY KEY,
+            ime_cepiva TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+
 def pobrisi_tabelo():
     cur.execute("""
         DROP TABLE oseba;
@@ -28,7 +37,9 @@ def pobrisi_tabelo():
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
 
-ustvari_tabelo()
+
+ustvari_tabelo_cepiva()
+
 
 
 

@@ -26,9 +26,12 @@ DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 def static(filename):
     return static_file(filename, root='static')
 
-@get('/')
-def index():
-    return template('osnova.html')
+@get('/pacient')
+def pacient():
+    cur.execute("SELECT emso, ime, priimek FROM oseba")
+    return template('pacient.html', osebe = cur)
+
+
 
 
 ######################################################################
