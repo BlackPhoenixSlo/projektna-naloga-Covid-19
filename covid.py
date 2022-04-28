@@ -30,6 +30,11 @@ def static(filename):
 @get('/')
 def index():
     return template('osnova.html', naslov = "jaka" , base ="jaka")
+@get('/pacient')
+def pacient():
+    cur.execute("SELECT emso, ime, priimek FROM oseba")
+    return template('pacient.html', osebe = cur)
+
 
 
 @get('/vpogled')
@@ -47,5 +52,3 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 # poženemo strežnik na podanih vratih, npr. http://localhost:8080/
 if __name__ == "__main__":
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER)
-
-
