@@ -1,4 +1,4 @@
-db = 'sem2022_uporabnik'
+db = 'banka2022_janos'
 host = 'baza.fmf.uni-lj.si'
-username = 'user'
-password = 'password'
+user = 'javnost'
+password = 'javnogeslo'
