@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 # uvozimo bottle.py
-from bottleext import get, post, run, request, template, redirect, static_file, url
+from bottleext import get, post, run, request, template, redirect, static_file, url, debug
 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
@@ -20,16 +20,21 @@ SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
-# debug(True)
+debug(True)
 
 @get('/static/<filename:path>')
 def static(filename):
-    return static_file(filename, root='static')
+    return static_file(filename, root='static' )
+
 
 @get('/')
 def index():
-    return template('osnova.html')
+    return template('osnova.html', naslov = "jaka" , base ="jaka")
 
+
+@get('/vpogled')
+def vpogled():
+    return template('normal_person.html', napaka = "" , ime="" , priimek="", emso="" )
 
 ######################################################################
 # Glavni program
