@@ -26,14 +26,22 @@ debug(True)
 def static(filename):
     return static_file(filename, root='static' )
 
-
+### Indeks -> vstopna stran za delavce in bolnike
 @get('/')
 def index():
     return template('osnova.html', naslov = "jaka" , base ="jaka")
+
+### Izkaznica pacienta
 @get('/pacient')
 def pacient():
     cur.execute("SELECT emso, ime, priimek FROM oseba")
     return template('pacient.html', osebe = cur)
+
+### TODO izkaznica bolnice
+### TODO izkaznica zdravstvenega delavca
+### TODO možnost da zdravnik sprejema in odpušča bolnike, možnost bolnice da prestavi zdravnika v drugo bolnico
+### TODO možnost cepljenega bolnika, da si lahko ogleda svojo COVID izkaznico
+
 
 
 
