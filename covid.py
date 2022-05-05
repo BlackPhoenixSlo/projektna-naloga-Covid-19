@@ -2,10 +2,9 @@
 # -*- encoding: utf-8 -*-
 ############################################################################################
 from bottle import *
-import sqlite3
+from bottleext import get, post, run, request, template, redirect, static_file, url
 import bottle
 import hashlib # računanje kriptografski hash za gesla
-from datetime import datetime
 
 
 # uvozimo ustrezne podatke za povezavo
@@ -57,11 +56,10 @@ def get_user(auto_login=True):
     username = bottle.request.get_cookie('username', secret=secret)
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
-        c = baza.cursor()
-        c.execute("SELECT username, ime, vloga, bolnisnica FROM uporabnik WHERE username=?",
+        cur.execute("SELECT username, ime FROM uporabnik WHERE username=?",
                   [username])
-        r = c.fetchone()
-        c.close ()
+        r = cur.fetchone()
+        cur.close()
         if r is not None:
             # uporabnik obstaja, vrnemo njegove podatke
             return r
@@ -70,6 +68,19 @@ def get_user(auto_login=True):
         bottle.redirect('/login/')
     else:
         return None
+
+
+def get_my_profile(username):
+    """Funkcija glede na vlogo vrača podatke za kartico osebe."""
+    return None
+    
+
+def get_my_role(username):
+    """Funkcija vrača vlogo prijavljene osebe."""
+    (username, _) = get_user()
+    cur.execute("SELECT stanje FROM oseba WHERE username=?", [username])
+    return cur.fetchone()
+
 
 def get_pacients():
     """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni."""
@@ -81,27 +92,6 @@ def get_pacients():
         c.execute()
     else:
         return None
-
-
-def get_my_profile():
-    """Funkcija glede na vlogo vrača podatke za kartico osebe."""
-    if get_user() == None:
-        return None
-    else:    
-        (username, ime, vloga, bolnisnica) = get_user()
-        c = baza.cursor()
-        if vloga == "zdravstveni delavec":
-            # TODO poglej bazo in vrni podatke zdravstvenega delavca
-            c.close()
-        elif vloga == "pacient":
-            # TODO poglej bazo in vrni podatke pacienta
-            c.close()
-            return None
-        elif vloga == "uprava":
-            # TODO poglej bazo in vrni podatke za vse bolnike in delavce tiste bolnice
-            c.close
-            return None
-
 
 def transfer_medic(name):
     """Funkcija zamenja lokacijo zdravstvenega delavca. Pravice ima samo uprava """
@@ -123,27 +113,116 @@ def vax_pacient(ime, priimek, cepivo):
     return None
 
 ###############################################################
-@get('/static/<filename:path>')
+# Funkcije, ki obdelajo zahteve odjemalcev
+
+@route("/static/<filename:path>")
 def static(filename):
-    return static_file(filename, root='static' )    
+    """Splošna funkcija, ki servira vse statične datoteke iz naslova
+       /static/..."""
+    return static_file(filename, root=static_dir)
 
-### Izkaznica pacienta
-@get('/pacient')
-def pacient():
-    cur.execute("SELECT emso, ime, priimek FROM oseba")
-    return template('pacient.html', osebe = cur)
+@route("/")
+def main():
+    """Glavna stran."""
+    (username, ime) = get_user()
+    return template("test.html")
+    # Morebitno sporočilo za uporabnika
 
-### TODO izkaznica bolnice
-### TODO izkaznica zdravstvenega delavca
-### TODO možnost da zdravnik sprejema in odpušča bolnike, možnost bolnice da prestavi zdravnika v drugo bolnico
-### TODO možnost cepljenega bolnika, da si lahko ogleda svojo COVID izkaznico
+@route("/login/")
+def login_get():
+    """Serviraj formo za login."""
+    return template("login.html",
+                    napaka = None,
+                    username = None)
+
+@route("/register/")
+def register_get():
+    """Serviraj formo za registracijo"""
+    return template("register.html",
+                    napaka = None,
+                    username = None,
+                    ime = None)
+
+@post("/register/")
+def register_post():
+    """Registriraj novega uporabnika."""
+    username = request.forms.username
+    ime = request.forms.ime
+    password1 = request.forms.password1
+    password2 = request.forms.password2
+    # Ali uporabnik že obstaja?
+    cur.execute("SELECT 1 FROM uporabnik WHERE username=?", [username])
+    if cur.fetchone():
+        # Uporabnik že obstaja
+        return template("register.html",
+                               username=username,
+                               ime=ime,
+                               napaka='To uporabniško ime je že zavzeto')
+    elif not password1 == password2:
+        # Geslo se ne ujemata
+        return template("register.html",
+                               username=username,
+                               ime=ime,
+                               napaka='Gesli se ne ujemata')
+    else:
+        # Vse je v redu, vstavi novega uporabnika v bazo
+        password = password_hash(password1)
+        cur.execute("INSERT INTO uporabnik (username, ime, password) VALUES (?, ?, ?)",
+                  (username, ime, password))
+        # Daj uporabniku cookie
+        response.set_cookie('username', username, path='/', secret=secret)
+        redirect("/")
+
+
+
+""" @route("/user/<username>")
+def user_wall(username):
+    """"Osebna izkaznica osebe.""""
+    role = get_my_role(username)
+    if role == "zdravstveni_delavec":
+        cur.execute("SELECT ime, priimek, bolnica FROM oseba WHERE username=?", [username])
+        (ime, priimek, bolnica) = cur.fetchone()
+        cur.close()
+        return template("zdravstveni_delavec.html",
+                        ime = ime,
+                        priimek = priimek,
+                        bolnica = bolnica)
+    elif role == "pacient":
+        cur.execute("SELECT ime, priimek, bolnica, cepivo FROM oseba WHERE username=?", [username])
+        (ime, priimek, bolnica, cepivo) = cur.fetchone()
+        cur.close()
+        return template("pacient.html",
+                        ime = ime,
+                        priimek = priimek,
+                        bolnica = bolnica,
+                        cepivo = cepivo)
+    elif role == "uprava":
+        cur.execute("SELECT bolnica FROM oseba WHERE username=?", [username])
+        place = cur.fetchone()
+        cur.execute("SELECT ime, priimek, cepivo WHERE bolnica=?", [place])
+        pacients = cur.fetchall()
+        return template("bolnica.html",
+                        ) """
 
 
 
 
-@get('/vpogled')
-def vpogled():
-    return template('normal_person.html', napaka = "" , ime="" , priimek="", emso="" )
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ######################################################################
 # Glavni program
