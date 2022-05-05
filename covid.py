@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 ############################################################################################
-import bottle
+from bottle import *
 import sqlite3
 import bottle
 import hashlib # računanje kriptografski hash za gesla
@@ -72,7 +72,7 @@ def get_user(auto_login=True):
         return None
 
 def get_pacients():
-    """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni"""
+    """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni."""
     (username, ime, vloga, bolnisnica) = get_user()
     # Preverimo vlogo uporabnika
     if vloga == "zdravstveni_delavec":
@@ -84,7 +84,7 @@ def get_pacients():
 
 
 def get_my_profile():
-    """Funkcija glede na vlogo vrača podatke za kartico osebe"""
+    """Funkcija glede na vlogo vrača podatke za kartico osebe."""
     if get_user() == None:
         return None
     else:    
@@ -103,30 +103,29 @@ def get_my_profile():
             return None
 
 
-
-            
-
-
-
+def transfer_medic(name):
+    """Funkcija zamenja lokacijo zdravstvenega delavca. Pravice ima samo uprava """
+    return None
 
 
+def add_pacient(ime, priimek, cepivo=None):
+    """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
+    return None
 
 
+def remove_pacient(ime, priimek):
+    """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz baze. Pravice imajo samo zdravstveni delavci."""
+    return None
+
+
+def vax_pacient(ime, priimek, cepivo):
+    """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
+    return None
 
 ###############################################################
 @get('/static/<filename:path>')
 def static(filename):
-    return static_file(filename, root='static' )
-
-
-@bottle.route('/')
-def index():
-    """Glavna stran"""
-    s = session()
-    u = get_user(secret=secret, session=s)
-    
-    
-    
+    return static_file(filename, root='static' )    
 
 ### Izkaznica pacienta
 @get('/pacient')
