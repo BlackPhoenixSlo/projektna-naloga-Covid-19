@@ -1,8 +1,12 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
+############################################################################################
+import bottle
+import sqlite3
+import bottle
+import hashlib # računanje kriptografski hash za gesla
+from datetime import datetime
 
-# uvozimo bottle.py
-from bottleext import get, post, run, request, template, redirect, static_file, url, debug
 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
@@ -12,24 +16,117 @@ import auth_public as auth
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 
-
 import os
+############################################################################################
+# Konfiguracija
 
-# privzete nastavitve
+# Vklopimo debug
+bottle.debug(True)
+
+# Datoteka, kjer je spravljena baza
+baza_datoteka = "covid.sqlite"
+
+# Mapa s statičnimi datotekami
+static_dir = "./static"
+
+# Skrivnost za kodiranje cookijev
+secret = "6752c0f942dcb7d45bc947a79636f9ccbc59efc319c4024daf1163b00ea757ce"
+
+# Strezniske nastavitve
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
-debug(True)
 
+###############################################################
+# Pomozne funkcije
+
+def password_hash(s):
+    """Vrni SHA-512 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
+       kodirana s to funkcijo."""
+    h = hashlib.sha512()
+    h.update(s.encode('utf-8'))
+    return h.hexdigest()
+
+def get_user(auto_login=True):
+    """Poglej cookie in ugotovi, kdo je prijavljeni uporabnik,
+    vrni njegov username in ime. Če ni prijavljen, presumeri
+    na stran za prijavo ali vrni None (advisno od auto_login).
+    """
+    # Dobimo username iz piškotka
+    username = bottle.request.get_cookie('username', secret=secret)
+    # Preverimo, ali ta uporabnik obstaja
+    if username is not None:
+        c = baza.cursor()
+        c.execute("SELECT username, ime, vloga, bolnisnica FROM uporabnik WHERE username=?",
+                  [username])
+        r = c.fetchone()
+        c.close ()
+        if r is not None:
+            # uporabnik obstaja, vrnemo njegove podatke
+            return r
+    # Če pridemo do sem, uporabnik ni prijavljen, naredimo redirect
+    if auto_login:
+        bottle.redirect('/login/')
+    else:
+        return None
+
+def get_pacients():
+    """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni"""
+    (username, ime, vloga, bolnisnica) = get_user()
+    # Preverimo vlogo uporabnika
+    if vloga == "zdravstveni_delavec":
+        c = baza.cursor()
+        # TODO izberem vse paciente v bolnici kjer je tisti zdravnik
+        c.execute()
+    else:
+        return None
+
+
+def get_my_profile():
+    """Funkcija glede na vlogo vrača podatke za kartico osebe"""
+    if get_user() == None:
+        return None
+    else:    
+        (username, ime, vloga, bolnisnica) = get_user()
+        c = baza.cursor()
+        if vloga == "zdravstveni delavec":
+            # TODO poglej bazo in vrni podatke zdravstvenega delavca
+            c.close()
+        elif vloga == "pacient":
+            # TODO poglej bazo in vrni podatke pacienta
+            c.close()
+            return None
+        elif vloga == "uprava":
+            # TODO poglej bazo in vrni podatke za vse bolnike in delavce tiste bolnice
+            c.close
+            return None
+
+
+
+            
+
+
+
+
+
+
+
+
+###############################################################
 @get('/static/<filename:path>')
 def static(filename):
     return static_file(filename, root='static' )
 
-### Indeks -> vstopna stran za delavce in bolnike
-@get('/')
+
+@bottle.route('/')
 def index():
-    return template('osnova.html', naslov = "jaka" , base ="jaka")
+    """Glavna stran"""
+    s = session()
+    u = get_user(secret=secret, session=s)
+    
+    
+    
 
 ### Izkaznica pacienta
 @get('/pacient')
@@ -53,10 +150,10 @@ def vpogled():
 # Glavni program
 
 # priklopimo se na bazo
-conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
+baza = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 #conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT) # onemogočimo transakcije
-cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+cur = baza.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 # poženemo strežnik na podanih vratih, npr. http://localhost:8080/
 if __name__ == "__main__":
-    run(host='localhost', port=SERVER_PORT, reloader=RELOADER)
+    bottle.run(host='localhost', port=SERVER_PORT, reloader=RELOADER)
