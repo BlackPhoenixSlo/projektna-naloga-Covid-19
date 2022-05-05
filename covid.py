@@ -56,10 +56,9 @@ def get_user(auto_login=True):
     username = bottle.request.get_cookie('username', secret=secret)
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
-        cur.execute("SELECT username, ime FROM uporabnik WHERE username=?",
+        cur.execute("SELECT username, emso FROM uporabniki WHERE username=%s",
                   [username])
         r = cur.fetchone()
-        cur.close()
         if r is not None:
             # uporabnik obstaja, vrnemo njegove podatke
             return r
@@ -72,7 +71,7 @@ def get_user(auto_login=True):
 
 def get_my_profile(username):
     """Funkcija glede na vlogo vrača podatke za kartico osebe."""
-    return None
+    
     
 
 def get_my_role(username):
@@ -125,7 +124,7 @@ def static(filename):
 def main():
     """Glavna stran."""
     (username, ime) = get_user()
-    return template("test.html")
+    get_my_profile(username)
     # Morebitno sporočilo za uporabnika
 
 @route("/login/")
@@ -141,37 +140,38 @@ def register_get():
     return template("register.html",
                     napaka = None,
                     username = None,
-                    ime = None)
+                    emso = None)
 
 @post("/register/")
 def register_post():
     """Registriraj novega uporabnika."""
     username = request.forms.username
-    ime = request.forms.ime
+    emso = request.forms.emso
     password1 = request.forms.password1
     password2 = request.forms.password2
     # Ali uporabnik že obstaja?
-    cur.execute("SELECT 1 FROM uporabnik WHERE username=?", [username])
+    cur.execute("SELECT 1 FROM uporabniki WHERE username=%s", [username])
     if cur.fetchone():
         # Uporabnik že obstaja
         return template("register.html",
                                username=username,
-                               ime=ime,
+                               emso=emso,
                                napaka='To uporabniško ime je že zavzeto')
     elif not password1 == password2:
         # Geslo se ne ujemata
         return template("register.html",
                                username=username,
-                               ime=ime,
+                               emso=emso,
                                napaka='Gesli se ne ujemata')
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_hash(password1)
-        cur.execute("INSERT INTO uporabnik (username, ime, password) VALUES (?, ?, ?)",
-                  (username, ime, password))
+        cur.execute("INSERT INTO uporabniki (username, emso, password) VALUES (%s, %s, %s)",
+                  (username, emso, password))
+        baza.commit()
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
-        redirect("/")
+        redirect("/login/")
 
 
 
