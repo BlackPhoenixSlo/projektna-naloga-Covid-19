@@ -50,7 +50,7 @@ def get_user(auto_login=True):
     na stran za prijavo ali vrni None (advisno od auto_login).
     """
     # Dobimo username iz piškotka
-    username = bottle.request.get_cookie('username', secret=secret)
+    username = request.get_cookie('username', secret=secret)
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
         cur.execute("SELECT username, emso FROM uporabnik WHERE username=%s",
@@ -61,45 +61,40 @@ def get_user(auto_login=True):
             return r
     # Če pridemo do sem, uporabnik ni prijavljen, naredimo redirect
     if auto_login:
-        bottle.redirect('/login/')
+        redirect('/login/')
     else:
         return None
 
 
 def get_my_profile():
     """Funkcija glede na vlogo vrača podatke za kartico osebe."""
+    (_, emso) = get_user()
+    cur.execute("SELECT * FROM oseba WHERE emso = %s", [emso])
+    return cur.fetchone()
+    
 
 
 
 def get_pacients():
     """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni."""
-    (username, ime, vloga, bolnisnica) = get_user()
-    # Preverimo vlogo uporabnika
-    if vloga == "zdravstveni_delavec":
-        c = baza.cursor()
-        # TODO izberem vse paciente v bolnici kjer je tisti zdravnik
-        c.execute()
-    else:
-        return None
 
-def transfer_medic(name):
+def transfer_medic():
     """Funkcija zamenja lokacijo zdravstvenega delavca. Pravice ima samo uprava """
-    return None
 
 
-def add_pacient(ime, priimek, cepivo=None):
+def add_pacient():
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
-    return None
+
 
 
 def remove_pacient(ime, priimek):
     """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz baze. Pravice imajo samo zdravstveni delavci."""
-    return None
+    
 
 
 def vax_pacient(ime, priimek, cepivo):
     """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
-    return None
+    
 
 ###############################################################
 # Funkcije, ki obdelajo zahteve odjemalcev
@@ -113,7 +108,7 @@ def static(filename):
 @route("/")
 def main():
     """Glavna stran."""
-    (username, ime) = get_user()
+    return template("user.html", get_my_profile())
     # Morebitno sporočilo za uporabnika
 
 @route("/login/")
@@ -191,9 +186,12 @@ def register_post():
         redirect("/login/")
 
 
-@route("/user/<username>")
-def user_wall(username):
-    """"Osebna izkaznica osebe."""
+@route("/logout/")
+def logout():
+    """Pobriši cookie in preusmeri na login."""
+    response.delete_cookie('username', path='/')
+    redirect('/login/')
+
 
     
 
