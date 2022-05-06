@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Osebna izkaznica</title>
+        <meta name="description" content="Our first page">
+        <meta name="keywords" content="html tutorial template">
+    </head>
+    <body>
+        %if ime:
+        <p>{{ime}}</p>
+        %end
+        %if priimek:
+        <p>{{priimek}}</p>
+        %end
+        %if emso:
+        <p>{{emso}}</p>
+        %end
+        %if stalno_prebivalisce:
+        <p>{{stalno_prebivalisce}}</p>
+        %end
+        %if datum_testiranja:
+        <p>{{datum_testiranja}}</p>
+        %end
+        %if rezultat_test:
+        <p>{{rezultat_test}}</p>
+        %end
+        %if cepivo:
+        <p>{{cepivo}}</p>
+        %end
+        <div>
+            <a href="/logout/">Odjava</a>
+          </div>
+    </body>
+</html>
