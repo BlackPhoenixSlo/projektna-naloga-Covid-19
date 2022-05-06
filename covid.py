@@ -22,9 +22,6 @@ import os
 # Vklopimo debug
 bottle.debug(True)
 
-# Datoteka, kjer je spravljena baza
-baza_datoteka = "covid.sqlite"
-
 # Mapa s statičnimi datotekami
 static_dir = "./static"
 
@@ -56,7 +53,7 @@ def get_user(auto_login=True):
     username = bottle.request.get_cookie('username', secret=secret)
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
-        cur.execute("SELECT username, emso FROM uporabniki WHERE username=%s",
+        cur.execute("SELECT username, emso FROM uporabnik WHERE username=%s",
                   [username])
         r = cur.fetchone()
         if r is not None:
@@ -69,16 +66,9 @@ def get_user(auto_login=True):
         return None
 
 
-def get_my_profile(username):
+def get_my_profile():
     """Funkcija glede na vlogo vrača podatke za kartico osebe."""
-    
-    
 
-def get_my_role(username):
-    """Funkcija vrača vlogo prijavljene osebe."""
-    (username, _) = get_user()
-    cur.execute("SELECT stanje FROM oseba WHERE username=?", [username])
-    return cur.fetchone()
 
 
 def get_pacients():
@@ -124,7 +114,6 @@ def static(filename):
 def main():
     """Glavna stran."""
     (username, ime) = get_user()
-    get_my_profile(username)
     # Morebitno sporočilo za uporabnika
 
 @route("/login/")
@@ -133,6 +122,27 @@ def login_get():
     return template("login.html",
                     napaka = None,
                     username = None)
+
+@post("/login/")
+def login_post():
+    """Obdelaj izpolnjeno formo za prijavo"""
+    # Uporabniško ime, ki ga je uporabnik vpisal v formo
+    username = request.forms.username
+    # Izračunamo hash gesla, ki ga bomo spravili
+    password = password_hash(request.forms.password)
+    # Preverimo, ali se je uporabnik pravilno prijavil
+    cur.execute("SELECT 1 FROM uporabnik WHERE username=%s AND password=%s",
+              [username, password])
+    if cur.fetchone() is None:
+        # Username in geslo se ne ujemata
+        return template("login.html",
+                        napaka="Nepravilna prijava",
+                        username=username)
+    else:
+        # Vse je v redu, nastavimo cookie in preusmerimo na glavno stran
+        response.set_cookie('username', username, path='/', secret=secret)
+        redirect("/")
+
 
 @route("/register/")
 def register_get():
@@ -150,7 +160,7 @@ def register_post():
     password1 = request.forms.password1
     password2 = request.forms.password2
     # Ali uporabnik že obstaja?
-    cur.execute("SELECT 1 FROM uporabniki WHERE username=%s", [username])
+    cur.execute("SELECT 1 FROM uporabnik WHERE username=%s", [username])
     if cur.fetchone():
         # Uporabnik že obstaja
         return template("register.html",
@@ -158,7 +168,7 @@ def register_post():
                                emso=emso,
                                napaka='To uporabniško ime je že zavzeto')
     elif not password1 == password2:
-        # Geslo se ne ujemata
+        # Gesli se ne ujemata
         return template("register.html",
                                username=username,
                                emso=emso,
@@ -166,43 +176,26 @@ def register_post():
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_hash(password1)
-        cur.execute("INSERT INTO uporabniki (username, emso, password) VALUES (%s, %s, %s)",
-                  (username, emso, password))
-        baza.commit()
+        try:
+            cur.execute("INSERT INTO uporabnik (username, emso, password) VALUES (%s, %s, %s)",
+                    (username, emso, password))
+            baza.commit()
+        except psycopg2.errors.ForeignKeyViolation:
+            print("Uporabnika ni v bazi registriranih oseb")
+            return template("register.html",
+                            username = username,
+                            emso = emso,
+                            napaka = 'Dane emso stevilke ni v bazi oseb. Posvetujte se z zdravnikom.')
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/login/")
 
 
-
-""" @route("/user/<username>")
+@route("/user/<username>")
 def user_wall(username):
-    """"Osebna izkaznica osebe.""""
-    role = get_my_role(username)
-    if role == "zdravstveni_delavec":
-        cur.execute("SELECT ime, priimek, bolnica FROM oseba WHERE username=?", [username])
-        (ime, priimek, bolnica) = cur.fetchone()
-        cur.close()
-        return template("zdravstveni_delavec.html",
-                        ime = ime,
-                        priimek = priimek,
-                        bolnica = bolnica)
-    elif role == "pacient":
-        cur.execute("SELECT ime, priimek, bolnica, cepivo FROM oseba WHERE username=?", [username])
-        (ime, priimek, bolnica, cepivo) = cur.fetchone()
-        cur.close()
-        return template("pacient.html",
-                        ime = ime,
-                        priimek = priimek,
-                        bolnica = bolnica,
-                        cepivo = cepivo)
-    elif role == "uprava":
-        cur.execute("SELECT bolnica FROM oseba WHERE username=?", [username])
-        place = cur.fetchone()
-        cur.execute("SELECT ime, priimek, cepivo WHERE bolnica=?", [place])
-        pacients = cur.fetchall()
-        return template("bolnica.html",
-                        ) """
+    """"Osebna izkaznica osebe."""
+
+    
 
 
 
