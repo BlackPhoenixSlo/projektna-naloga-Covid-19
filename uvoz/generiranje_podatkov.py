@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from scipy import rand
+from sqlalchemy import true
 
 ################################################
 # Osnovni konfiguracija podatkov
@@ -10,6 +11,7 @@ from scipy import rand
 prebivalstvo_slovenije = 2 ** 6
 precepljenost_prebivalstva = 0.582
 delez_zensk = 0.511
+julijana_zakrajsek = '28-10-1912'
 
 seed = 1
 rng = np.random.default_rng(seed)
@@ -50,26 +52,44 @@ priimki["delez"] = (priimki['stevilo'] / priimki['stevilo'].sum())
 ###################################################################################
 # Pomozne funkcije
 
-def random_date_generator(start_date=datetime(1900,1,1)):
+def random_date_generator(start_date = julijana_zakrajsek):
     """Funkcija vraca nakljucni datum, glede ustrezne vhodne parametre"""
-    days_to_add = (datetime.now() - start_date).days
-    random_date = np.datetime64(start_date) + np.random.choice(days_to_add).days
-    date = pd.to_datetime(str(random_date))
-    str_date = date.strftime('%d%m%Y')
-    return str_date
+    num_of_days = (datetime.now() - datetime.strptime(start_date, '%d-%m-%Y')).days
+    days = np.random.choice(num_of_days)
+    random_date = pd.to_datetime(start_date) + pd.DateOffset(days=days)
+    str_date = random_date.strftime('%d%m%Y')
+    return str_date[:4] + str_date[5:]
 
 def generiraj_emso(zenska):
     """Funkcija generira emso stevilko"""
-    stevec_m = 0
-    stevec_z = 0
     if zenska:
-        return
-        
+        # Malce pretirana poenostavitev zadnjih treh cifer, lahko se zgodi da pridejo iste + zanemarjam take, ki imajo dve nicli npr. 015,...
+        return (random_date_generator() + '505' + str(np.random.randint(100, 999)))
+    else:
+        return (random_date_generator() + '500' + str(np.random.randint(100, 999)))
 
-print(random_date_generator())
+
+def generiraj_osebo(zenska):
+    """Funkcija izbere nakljucno ime in nakljucni priimek, nakljucni emso in zgenerira osebo."""
+    if zenska:
+        ime = zenska_imena.sample(n=1, weights=zenska_imena["delez"])["ime"].to_string()
+        priimek = priimki["priimek"].sample(n=1)
+        emso = generiraj_emso(True)
+        stalno_prebivalisce = "Ljubljanska ulica 15"
+        datum_testiranja = "15-05-2020"
+        rezultat_test = True
+        cepivo = 1
+        return {"ime": ime, 
+                "priimek": priimek,
+                "emso": emso,
+                "stalno_prebivalisce": stalno_prebivalisce,
+                "datum_testiranja": datum_testiranja,
+                "rezultat_test": rezultat_test,
+                "cepivo": cepivo}
 
 
 
+print(generiraj_osebo(True))
 
 
 
