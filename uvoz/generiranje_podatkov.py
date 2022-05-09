@@ -72,24 +72,31 @@ def generiraj_emso(zenska):
 def generiraj_osebo(zenska):
     """Funkcija izbere nakljucno ime in nakljucni priimek, nakljucni emso in zgenerira osebo."""
     if zenska:
-        ime = zenska_imena.sample(n=1, weights=zenska_imena["delez"])["ime"].to_string()
-        priimek = priimki["priimek"].sample(n=1)
+        ime = zenska_imena["ime"].sample(n=1, weights=zenska_imena["delez"]).values[0]
+        priimek = priimki["priimek"].sample(n=1, weights=zenska_imena["delez"]).values[0]
         emso = generiraj_emso(True)
-        stalno_prebivalisce = "Ljubljanska ulica 15"
-        datum_testiranja = "15-05-2020"
-        rezultat_test = True
-        cepivo = 1
-        return {"ime": ime, 
-                "priimek": priimek,
-                "emso": emso,
-                "stalno_prebivalisce": stalno_prebivalisce,
-                "datum_testiranja": datum_testiranja,
-                "rezultat_test": rezultat_test,
-                "cepivo": cepivo}
+    else :
+        ime = moska_imena["ime"].sample(n=1, weights=moska_imena["delez"]).values[0]
+        priimek = priimki["priimek"].sample(n=1, weights=zenska_imena["delez"]).values[0]
+        emso = generiraj_emso(False)
+    stalno_prebivalisce = "Ljubljanska ulica 15"
+    datum_testiranja = "15-05-2020"
+    rezultat_test = True
+    cepivo = 1
+    return {"ime": ime, 
+            "priimek": priimek,
+            "emso": emso,
+            "stalno_prebivalisce": stalno_prebivalisce,
+            "datum_testiranja": datum_testiranja,
+            "rezultat_test": rezultat_test,
+            "cepivo": cepivo}
 
 
 
-print(generiraj_osebo(True))
+# TODO popravi še za cepiva, za stalni naslov se verjetno ne splača. Bolj koristno bi bilo nabrati par naslovov in jih random razporediti
+# TODO for zanka za 5k uporabnikov in push v bazo
+# TODO naredi zdravnika, upravo, in bolnika
+# TODO 
 
 
 
