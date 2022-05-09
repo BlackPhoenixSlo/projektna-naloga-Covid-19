@@ -131,3 +131,8 @@ dmypy.json
 
 auth.py
 uvoz/moska_imena.csv
+uvoz/priimki_af.csv
+uvoz/priimki_gl.csv
+uvoz/priimki_mr.csv
+uvoz/priimki_sž.csv
+uvoz/zenska_imena.csv
