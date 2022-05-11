@@ -30,5 +30,21 @@
         <div>
             <a href="/logout/">Odjava</a>
           </div>
+        %if is_doctor:
+        <div>
+            <a href="/add_pacient/">Dodaj pacienta</a>
+        </div>
+        %end
+        %if is_vaxed:
+        <div>
+            <a href="/covid_pass/">PCT potrdilo</a>
+        </div>
+        %end
+        %if is_doctor:
+        <div>
+            <a href="/remove_pacient/">Odstrani pacienta</a>
+        </div>
+        %end
+        
     </body>
 </html>
