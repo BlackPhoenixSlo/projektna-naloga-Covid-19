@@ -212,8 +212,25 @@ def logout():
 
 
 
+@get('/vpogledextra')
+def vpogledextra():
+    emso= request.query.emso
+    ime= request.query.ime
+    priimek= request.query.priimek
+    
+
+    cur.execute("""SELECT emso, ime, priimek FROM oseba
+    WHERE emso = %s and ime = %s and priimek = %s""" , [emso, ime, priimek] )
+    return template('pacient.html', osebe = cur)
 
 
+
+<<<<<<< Updated upstream
+=======
+@get('/vpogled')
+def vpogled():
+    return template('vpogled.html', napaka = "" , ime="" , priimek="", emso="" )
+>>>>>>> Stashed changes
 
 ######################################################################
 # Glavni program
