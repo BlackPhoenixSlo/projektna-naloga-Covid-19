@@ -6,15 +6,8 @@ GRANT CONNECT ON DATABASE sem2022_tinm TO javnost;
 GRANT USAGE ON SCHEMA public TO javnost;
 
 CREATE TABLE IF NOT EXISTS cepivo (
-    id_cepiva INTEGER PRIMARY KEY,
+    id_cepiva SERIAL PRIMARY KEY,
     ime_cepiva TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS bolnisnica (
-    id_bolnisnice INTEGER PRIMARY KEY,
-    ime_bolnisnice TEXT NOT NULL,
-    stevilo_postelj INTEGER NOT NULL,
-    stevilo_zdravnikov INTEGER NOT NULL
 );
 
 
@@ -47,6 +40,12 @@ CREATE TABLE IF NOT EXISTS zdravstveni_delavec (
 );
 
 
+CREATE TABLE IF NOT EXISTS bolnisnica (
+    id_bolnisnice SERIAL PRIMARY KEY,
+    ime_bolnisnice TEXT NOT NULL,
+    stevilo_postelj INTEGER NOT NULL,
+    stevilo_zdravnikov INTEGER
+);
 
 
 GRANT ALL ON ALL TABLES IN SCHEMA public TO tinm WITH GRANT OPTION;
