@@ -225,12 +225,9 @@ def vpogledextra():
 
 
 
-<<<<<<< Updated upstream
-=======
 @get('/vpogled')
 def vpogled():
     return template('vpogled.html', napaka = "" , ime="" , priimek="", emso="" )
->>>>>>> Stashed changes
 
 ######################################################################
 # Glavni program
