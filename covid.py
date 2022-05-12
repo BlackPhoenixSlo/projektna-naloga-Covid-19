@@ -71,19 +71,23 @@ def get_my_profile():
     (_, emso) = get_user()
     cur.execute("SELECT * FROM oseba WHERE emso = %s", [emso])
     return cur.fetchone()
-    
 
 
-
-def get_pacients():
-    """Funkcija pogleda če ima uporabnik pravice, če jih ima potem vrne vse paciente v bolnici kjer smo prijavljeni."""
-
-def transfer_medic():
-    """Funkcija zamenja lokacijo zdravstvenega delavca. Pravice ima samo uprava """
+def is_doctor(emso):
+    """Funkcija za danega uporabnika preveri, če je zdravnik"""
+    cur.execute("SELECT exists (SELECT 1 FROM zdravstveni_delavec WHERE emso = %s LIMIT 1);", [emso])
+    return cur.fetchone()[0]
 
 
-def add_pacient():
+def is_vaxed(emso):
+    """Funkcija za danega uporabnika preveri, če je cepljen"""
+    cur.execute("SELECT exists (SELECT 1 FROM oseba WHERE emso = %s AND cepivo IS NOT NULL)", [emso])
+    return cur.fetchone()[0]
+
+
+def add_to_hospital(emso_zdravnika, emso_pacienta):
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
+    # TODO 
 
 
 
@@ -108,8 +112,8 @@ def static(filename):
 @route("/")
 def main():
     """Glavna stran."""
-    return template("user.html", get_my_profile())
-    # Morebitno sporočilo za uporabnika
+    profil = get_my_profile()
+    return template("user.html", profil, is_doctor=is_doctor(profil[0]), is_vaxed=is_vaxed(profil[0]))
 
 @route("/login/")
 def login_get():
@@ -193,11 +197,35 @@ def logout():
     redirect('/login/')
 
 
+@route("/add_pacient/")
+def add_pacient_get():
+    """Forma za dodajanje pacientov"""
+    return template('add_pacient.html')
+
+
+@post("/add_pacient/")
+def add_pacient_post():
+    """Dodajanje novega pacienta"""
+    # TODO preglej vse podatke iz html forme in jih preko funkcije add_to_hospital dodaj v ustrezno bolnico 
+    redirect('/')
     
 
+@route('/pct_certificate/')
+def pct_certificate():
+    """Serviraj formo za PCT potrdilo"""
+    return template("pct_certificate.html")
 
 
+@route("/remove_pacient/")
+def remove_get():
+    """Serviraj formo za odstranitev pacienta"""
+    return template('remove_pacient.html')
 
+@post("/remove_pacient")
+def remove_post():
+    """Odstrani uporabnika"""
+    # TODO preglej podatke iz forme odstranitev pacienta in jih preko funkcije remove_pacient odstrani
+    redirect('/')
 
 
     
