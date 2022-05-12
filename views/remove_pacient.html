@@ -1,1 +1,57 @@
-TODO seznam vse bolnikov v bolnisnici zdravnika z gumbi za vsakega da jih lahko odstranis
+
+<!DOCTYPE html>
+<html lang="si">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link href="{{url('static', filename='style.css')}}" rel="stylesheet" type="text/css">
+
+    
+        <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+
+    <title>COVID portal - Odstrani pacienta</title>
+  </head>
+  <body>
+    <div class="container">
+        <h2>Tabela pacientov</h2>
+
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Ime </th>
+                <th scope="col">Priimek</th>
+                <th scope="col">Emso</th>
+                <th scope="col">Opcija</th>
+              </tr>
+            </thead>
+            <tbody>
+                %for (ime,priimek,emso) in transakcije:
+                    <tr>
+                    <td>{{ime}}</td>
+                    <td>{{priimek}}</td>
+                    <td>{{emso}}</td>
+                    <td><a class="margin-gor-dol btn  btn-primary" href="/remove/{{emso}}">Odstrani</a>
+                        <a class="margin-gor-dol btn btn-primary " href="/vpogled/{{emso}}">Vpogled</a></td>
+
+                    </tr>
+                    %end
+              
+                
+              
+            </tbody>
+          </table>
+      </div> <!-- /container -->
+  </body>
+</html>
