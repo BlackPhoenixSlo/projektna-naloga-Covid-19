@@ -1,3 +1,25 @@
 .opozorilo {
     color: #ff0000;
 }
+
+body{
+    margin: 0 auto;
+   
+
+}
+.container{
+    max-width: 600px;
+    margin:  30px;
+
+
+}
+
+.butni{
+   width: 50%;
+}
+
+.margin-gor-dol {
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

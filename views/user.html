@@ -15,45 +15,57 @@
 
     </head>
     <body>
-        %if ime:
-        <p>{{ime}}</p>
-        %end
-        %if priimek:
-        <p>{{priimek}}</p>
-        %end
-        %if emso:
-        <p>{{emso}}</p>
-        %end
-        %if stalno_prebivalisce:
-        <p>{{stalno_prebivalisce}}</p>
-        %end
-        %if datum_testiranja:
-        <p>{{datum_testiranja}}</p>
-        %end
-        %if rezultat_test:
-        <p>{{rezultat_test}}</p>
+    <div class="container">
+        <h1>Welcome to</h1>
+
+        <ul class="list-group">
+            %if ime:
+            <h5>Ime:</h5><li class="list-group-item">{{ime}}</li>
+            %end
+            %if priimek:
+            <h5>Priimek: </h5><li class="list-group-item">{{priimek}}</li>
+            %end
+            %if emso:
+            <h5>Emso: </h5><li class="list-group-item">{{emso}}</li>
+            %end
+            %if stalno_prebivalisce:
+            <h5>Prebivališče: </h5><li class="list-group-item">{{stalno_prebivalisce}}</li>
+            %end
+            %if datum_testiranja:
+            <h5>Datum testiranja: </h5><li class="list-group-item">{{datum_testiranja}}</li>
+            %end
+            %if rezultat_test:
+            <h5>Rezultat testa: </h5><li class="list-group-item">{{rezultat_test}}</li>
         %end
         %if cepivo:
-        <p>{{cepivo}}</p>
+        <h5>Cepivo: </h5><li class="list-group-item">{{cepivo}}</li>
         %end
-        <div>
-            <a href="/logout/">Odjava</a>
-          </div>
+          </ul>
+
+
+   
+        
+       
+        
+        <div class="butni">
+            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/logout/" >Odjava</a>
+      
         %if is_doctor:
-        <div>
-            <a href="/add_pacient/">Dodaj pacienta</a>
-        </div>
+      
+            <a class="margin-gor-dol btn btn-lg btn-primary btn-block"  href="/add_pacient/">Dodaj pacienta</a>
+   
         %end
         %if is_vaxed:
-        <div>
-            <a href="/covid_pass/">PCT potrdilo</a>
-        </div>
+       
+            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/covid_pass/">PCT potrdilo</a>
+     
         %end
         %if is_doctor:
-        <div>
-            <a href="/remove_pacient/">Odstrani pacienta</a>
-        </div>
+       
+            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/remove_pacient/">Odstrani pacienta</a>
+      
         %end
-        
+        </div>
+    </div>
     </body>
 </html>

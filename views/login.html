@@ -8,6 +8,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="/static/favicon.ico">
+    <link href="{{url('static', filename='style.css')}}" rel="stylesheet" type="text/css">
+
+    
         <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 
@@ -22,19 +25,19 @@
   </head>
   <body>
     <div class="container">
-        <form class="form-signin" role="form" method="post" action=".">
-          <h2 class="form-signin-heading">Prijava</h2>
+        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
+          <h2 class="form-signin-heading margin-gor-dol">Prijava</h2>
           %if napaka:
-          <div class="alert alert-warning">{{napaka}}</div>
+          <div class="alert alert-warning margin-gor-dol">{{napaka}}</div>
           %end
-          <input type="username" class="form-control" placeholder="Uporabniško ime"
+          <input  type="username" class="form-control margin-gor-dol" placeholder="Uporabniško ime"
                  %if username:
                  value="{{username}}"
                  %end
                  name="username"
                  required autofocus>
           <input type="password" class="form-control" placeholder="Geslo" name="password" required>
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
+          <button class="margin-gor-dol btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
           <div>
             <a href="/register/">Registracija</a>
           </div>

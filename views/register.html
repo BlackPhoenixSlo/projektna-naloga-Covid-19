@@ -19,28 +19,28 @@
   </head>
 
   <body>
-    <div class="container">
-        <form class="form-signin" role="form" method="post" action=".">
-          <h2 class="form-signin-heading">Registracija</h2>
+    <div class="container margin-gor-dol">
+        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
+          <h2 class="form-signin-heading margin-gor-dol">Registracija</h2>
           %if napaka:
-          <div class="alert alert-warning">{{napaka}}</div>
+          <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
           %end
   
-          <input type="username" class="form-control" placeholder="Uporabniško ime"
+          <input type="username" class="margin-gor-dol form-control" placeholder="Uporabniško ime"
                  %if username:
                  value="{{username}}"
                  %end
                  name="username"
                  required autofocus>
-          <input type="username" class="form-control" placeholder="emso"
+          <input type="username" class="margin-gor-dol form-control" placeholder="emso"
                  %if emso:
                  value="{{emso}}"
                  %end
                  name="emso"
                  required>
-          <input type="password" class="form-control" placeholder="Geslo" name="password1" required>
-          <input type="password" class="form-control" placeholder="Geslo" name="password2" required>
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Registriraj se</button>
+          <input type="password" class="margin-gor-dol form-control" placeholder="Geslo" name="password1" required>
+          <input type="password" class="margin-gor-dol form-control" placeholder="Geslo" name="password2" required>
+          <button class="margin-gor-dol btn btn-lg btn-primary btn-block margin-gor-dol" type="submit">Registriraj se</button>
         </form>
       </div> <!-- /container -->
   </body>
