@@ -29,13 +29,13 @@ CREATE TABLE IF NOT EXISTS uporabnik (
 
 
 CREATE TABLE IF NOT EXISTS pacient (
-    emso TEXT REFERENCES oseba(emso),
+    emso TEXT PRIMARY KEY REFERENCES oseba(emso),
     id_bolnisnice INTEGER REFERENCES bolnisnica(id_bolnisnice)
 );
 
 
 CREATE TABLE IF NOT EXISTS zdravstveni_delavec (
-    emso TEXT REFERENCES oseba(emso),
+    emso TEXT PRIMARY KEY REFERENCES oseba(emso),
     id_bolnisnice INTEGER REFERENCES bolnisnica(id_bolnisnice)
 );
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS bolnisnica (
     id_bolnisnice SERIAL PRIMARY KEY,
     ime_bolnisnice TEXT NOT NULL,
     stevilo_postelj INTEGER NOT NULL,
-    stevilo_zdravnikov INTEGER
+    
 );
 
 
@@ -56,5 +56,6 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO javnost;
 
 --- Dovolimo vsakemu obiskovalcu spletne strani, da se registrira v portal
 GRANT INSERT ON uporabnik TO javnost;
+GRANT INSERT ON pacient TO javnost;
 
 

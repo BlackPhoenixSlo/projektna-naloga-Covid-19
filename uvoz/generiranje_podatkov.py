@@ -162,7 +162,7 @@ ime_bolnisnice = ["Splošna bolnišnica Celje", "Bolnišnica Postojna", "Splošn
 stevilo_postelj = rng.integers(100, size=len(ime_bolnisnice))
 bolnisnica = pd.DataFrame({"ime_bolnisnice": ime_bolnisnice,
                             "stevilo_postelj": stevilo_postelj,
-                            "stevilo_zdravnikov": ""})
+                            })
 
 
 # Zdravnike razporedim enakomerno po vseh bolnišnicah
@@ -199,7 +199,6 @@ def main():
     copy_from_stringio(conn=conn, df=oseba, table="oseba")
     copy_from_stringio(conn=conn, df=pacient, table="pacient")
     copy_from_stringio(conn=conn, df=zdravstveni_delavec, table="zdravstveni_delavec")
-    # TODO vprasaj kako narediti skripto ki steje koliko delavce je je kje
     
 
 
