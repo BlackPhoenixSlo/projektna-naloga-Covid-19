@@ -3,7 +3,7 @@ from io import StringIO
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from sqlalchemy import null
+from sqlalchemy import false, null
 import auth
 import psycopg2
 import psycopg2.extensions
@@ -126,14 +126,12 @@ def generiraj_osebo(zenska):
         priimek = priimki["priimek"].sample(
             n=1, weights=zenska_imena["delez"]).values[0]
         emso = generiraj_emso(zenska)
-    cepljenje = cepi_osebo()
+
     return {"ime": ime,
             "priimek": priimek,
             "emso": emso,
-            "stalno_prebivalisce": "Ljubljanska cesta 15",
-            "datum_testiranja": datetime.strptime(random_date_generator("04-03-2020"), '%d%m%Y'),
-            "rezultat_test": testiraj_osebo(),
-            "cepivo": "" if cepljenje == 0 else (cepljenje - 1)}
+            "stalno_prebivalisce": "Ljubljanska cesta 15"
+            }
 
 
 def generiraj_prebivalstvo(prebivalci=prebivalstvo_slovenije):
@@ -152,10 +150,8 @@ def copy_from_stringio(conn, df, table):
     """
     # save dataframe to an in memory buffer
     buffer = StringIO()
-    df.to_csv(buffer, index_label='emso', header=False)
-    df.to_csv("osebe.csv", index_label='emso', header=False)
+    df.to_csv(buffer, header=False)
     buffer.seek(0)
-
     cursor = conn.cursor()
     try:
         cursor.copy_from(buffer, table, sep=",", null="")
@@ -189,36 +185,32 @@ bolnisnica = pd.DataFrame({"ime_bolnisnice": ime_bolnisnice,
 
 
 # 3. tabela - osebe
-oseba = generiraj_prebivalstvo()
+# oseba = generiraj_prebivalstvo()
 
 
 # 4. tabela - uporabniki
 # Se polni sproti ob registraciji uporabnika
 
 # 5. tabela - pacienti
-pozitivne_osebe = oseba[oseba["rezultat_test"] == True]
+""" pozitivne_osebe = oseba[oseba["rezultat_test"] == True]
 hospitalizirane_osebe = pozitivne_osebe.sample(frac=verjetnost_hospitalizacije)
 pacient = pd.DataFrame({"emso": hospitalizirane_osebe.index.values,
                         "id_bolnisnice": rng.integers(len(ime_bolnisnice), size=len(hospitalizirane_osebe.index))})
-pacient.set_index("emso", drop=True, inplace=True)
+pacient.set_index("emso", drop=True, inplace=True) """
 
-print(pacient.head())
 
 
 # 6. tabela - zdravstveni_delavec
-negativne_osebe = oseba[oseba["rezultat_test"] == False]
+""" negativne_osebe = oseba[oseba["rezultat_test"] == False]
 zdravstveni_delavci = negativne_osebe.sample(frac=delez_zdravstvenih_delavcev)
 zdravstveni_delavec = pd.DataFrame({"emso": zdravstveni_delavci.index.values,
                                     "id_bolnisnice": rng.integers(len(ime_bolnisnice), size=len(zdravstveni_delavci.index))})
-zdravstveni_delavec.set_index("emso", drop=True, inplace=True)
+zdravstveni_delavec.set_index("emso", drop=True, inplace=True) """
 
 
 def main():
-    #copy_from_stringio(conn=conn, df=cepivo, table="cepivo")
-    copy_from_stringio(conn=conn, df=oseba, table="oseba")
-    copy_from_stringio(conn=conn, df=pacient, table="pacient")
-    copy_from_stringio(conn=conn, df=zdravstveni_delavec,
-                       table="zdravstveni_delavec")
+    copy_from_stringio(conn=conn, df=cepivo, table="cepivo")
+    copy_from_stringio(conn=conn, df=bolnisnica, table="bolnisnica")
 
 
 if __name__ == '__main__':
