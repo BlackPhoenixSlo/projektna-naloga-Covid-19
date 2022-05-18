@@ -89,11 +89,19 @@ def add_to_hospital(emso_zdravnika, emso_pacienta):
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
     cur.execute("SELECT *")
 
+def vax_id(emso):
+    """Funkcija vrne ime cepiva, če ji podamo id cepiva"""
+    cur.execute("SELECT ime_cepiva FROM cepivo WHERE oseba(emso) = %s", [emso])
+    
+def hospital_id(emso):
+    """Funkcija vrača id bolnice v kateri dela trenutni uporabnik"""
+    # TODO 
 
 
 def remove_pacient(ime, priimek):
     """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz tabele. Pravice imajo samo zdravstveni delavci."""
-    
+    cur.execute("SELECT ime, priimek, emso FROM pacient")
+    return cur.fetchall
 
 
 def vax_pacient(ime, priimek, cepivo):
@@ -200,26 +208,31 @@ def logout():
 @route("/add_pacient/")
 def add_pacient_get():
     """Forma za dodajanje pacientov"""
-    return template('add_pacient.html')
+    (_, emso) = get_user()
+    if is_doctor(emso):
+        return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka=None)
+    else:
+        return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Nimate pravic za dodajanje pacienta.")
 
 
 @post("/add_pacient/")
 def add_pacient_post():
     """Dodajanje novega pacienta"""
-    # TODO preglej vse podatke iz html forme in jih preko funkcije add_to_hospital dodaj v ustrezno bolnico 
+    
     redirect('/')
     
 
 @route('/pct_certificate/')
 def pct_certificate():
     """Serviraj formo za PCT potrdilo"""
-    return template("pct_certificate.html")
+    user = get_my_profile()
+    return template("pct_certificate.html", user)
 
 
 @route("/remove_pacient/")
 def remove_get():
     """Serviraj formo za odstranitev pacienta"""
-    return template('remove_pacient.html')
+    return template('remove_pacient.html', pacient=remove_pacient())
 
 @post("/remove_pacient")
 def remove_post():
