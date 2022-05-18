@@ -43,9 +43,15 @@ CREATE TABLE IF NOT EXISTS zdravstveni_delavec (
 CREATE TABLE IF NOT EXISTS bolnisnica (
     id_bolnisnice SERIAL PRIMARY KEY,
     ime_bolnisnice TEXT NOT NULL,
-    stevilo_postelj INTEGER NOT NULL,
+    stevilo_postelj INTEGER NOT NULL
     
 );
+
+
+CREATE VIEW odstrani_pacienta AS
+SELECT pacient.emso, oseba.ime, oseba.priimek, pacient.id_bolnisnice 
+FROM pacient JOIN oseba ON oseba.emso = pacient.emso;
+
 
 
 GRANT ALL ON ALL TABLES IN SCHEMA public TO tinm WITH GRANT OPTION;
