@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 ############################################################################################
+import os
 from bottle import *
 from bottleext import get, post, run, request, template, redirect, static_file, url
 import bottle
-import hashlib # računanje kriptografski hash za gesla
+import hashlib  # računanje kriptografski hash za gesla
 
 
 # uvozimo ustrezne podatke za povezavo
@@ -12,10 +13,12 @@ import auth_public as auth
 
 
 # uvozimo psycopg2
-import psycopg2, psycopg2.extensions, psycopg2.extras
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
+import psycopg2
+import psycopg2.extensions
+import psycopg2.extras
+# se znebimo problemov s šumniki
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
-import os
 ############################################################################################
 # Konfiguracija
 
@@ -44,6 +47,7 @@ def password_hash(s):
     h.update(s.encode('utf-8'))
     return h.hexdigest()
 
+
 def get_user(auto_login=True):
     """Poglej cookie in ugotovi, kdo je prijavljeni uporabnik,
     vrni njegov username in ime. Če ni prijavljen, presumeri
@@ -54,7 +58,7 @@ def get_user(auto_login=True):
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
         cur.execute("SELECT username, emso FROM uporabnik WHERE username=%s",
-                  [username])
+                    [username])
         r = cur.fetchone()
         if r is not None:
             # uporabnik obstaja, vrnemo njegove podatke
@@ -75,13 +79,15 @@ def get_my_profile():
 
 def is_doctor(emso):
     """Funkcija za danega uporabnika preveri, če je zdravnik"""
-    cur.execute("SELECT exists (SELECT 1 FROM zdravstveni_delavec WHERE emso = %s LIMIT 1);", [emso])
+    cur.execute(
+        "SELECT exists (SELECT 1 FROM zdravstveni_delavec WHERE emso = %s LIMIT 1);", [emso])
     return cur.fetchone()[0]
 
 
 def is_vaxed(emso):
     """Funkcija za danega uporabnika preveri, če je cepljen"""
-    cur.execute("SELECT exists (SELECT 1 FROM oseba WHERE emso = %s AND cepivo IS NOT NULL)", [emso])
+    cur.execute(
+        "SELECT exists (SELECT 1 FROM oseba WHERE emso = %s AND cepivo IS NOT NULL)", [emso])
     return cur.fetchone()[0]
 
 
@@ -89,13 +95,15 @@ def add_to_hospital(emso_zdravnika, emso_pacienta):
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
     cur.execute("SELECT *")
 
+
 def vax_id(emso):
     """Funkcija vrne ime cepiva, če ji podamo id cepiva"""
     cur.execute("SELECT ime_cepiva FROM cepivo WHERE oseba(emso) = %s", [emso])
-    
+
+
 def hospital_id(emso):
     """Funkcija vrača id bolnice v kateri dela trenutni uporabnik"""
-    # TODO 
+    # TODO
 
 
 def remove_pacient(ime, priimek):
@@ -106,7 +114,7 @@ def remove_pacient(ime, priimek):
 
 def vax_pacient(ime, priimek, cepivo):
     """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
-    
+
 
 ###############################################################
 # Funkcije, ki obdelajo zahteve odjemalcev
@@ -117,18 +125,21 @@ def static(filename):
        /static/..."""
     return static_file(filename, root=static_dir)
 
+
 @route("/")
 def main():
     """Glavna stran."""
     profil = get_my_profile()
     return template("user.html", profil, is_doctor=is_doctor(profil[0]), is_vaxed=is_vaxed(profil[0]))
 
+
 @route("/login/")
 def login_get():
     """Serviraj formo za login."""
     return template("login.html",
-                    napaka = None,
-                    username = None)
+                    napaka=None,
+                    username=None)
+
 
 @post("/login/")
 def login_post():
@@ -139,7 +150,7 @@ def login_post():
     password = password_hash(request.forms.password)
     # Preverimo, ali se je uporabnik pravilno prijavil
     cur.execute("SELECT 1 FROM uporabnik WHERE username=%s AND password=%s",
-              [username, password])
+                [username, password])
     if cur.fetchone() is None:
         # Username in geslo se ne ujemata
         return template("login.html",
@@ -155,9 +166,10 @@ def login_post():
 def register_get():
     """Serviraj formo za registracijo"""
     return template("register.html",
-                    napaka = None,
-                    username = None,
-                    emso = None)
+                    napaka=None,
+                    username=None,
+                    emso=None)
+
 
 @post("/register/")
 def register_post():
@@ -171,28 +183,28 @@ def register_post():
     if cur.fetchone():
         # Uporabnik že obstaja
         return template("register.html",
-                               username=username,
-                               emso=emso,
-                               napaka='To uporabniško ime je že zavzeto')
+                        username=username,
+                        emso=emso,
+                        napaka='To uporabniško ime je že zavzeto')
     elif not password1 == password2:
         # Gesli se ne ujemata
         return template("register.html",
-                               username=username,
-                               emso=emso,
-                               napaka='Gesli se ne ujemata')
+                        username=username,
+                        emso=emso,
+                        napaka='Gesli se ne ujemata')
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_hash(password1)
         try:
             cur.execute("INSERT INTO uporabnik (username, emso, password) VALUES (%s, %s, %s)",
-                    (username, emso, password))
+                        (username, emso, password))
             baza.commit()
         except psycopg2.errors.ForeignKeyViolation:
             print("Uporabnika ni v bazi registriranih oseb")
             return template("register.html",
-                            username = username,
-                            emso = emso,
-                            napaka = 'Dane emso stevilke ni v bazi oseb. Posvetujte se z zdravnikom.')
+                            username=username,
+                            emso=emso,
+                            napaka='Dane emso stevilke ni v bazi oseb. Posvetujte se z zdravnikom.')
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/login/")
@@ -218,9 +230,9 @@ def add_pacient_get():
 @post("/add_pacient/")
 def add_pacient_post():
     """Dodajanje novega pacienta"""
-    
+
     redirect('/')
-    
+
 
 @route('/pct_certificate/')
 def pct_certificate():
@@ -234,6 +246,7 @@ def remove_get():
     """Serviraj formo za odstranitev pacienta"""
     return template('remove_pacient.html', pacient=remove_pacient())
 
+
 @post("/remove_pacient")
 def remove_post():
     """Odstrani uporabnika"""
@@ -241,41 +254,29 @@ def remove_post():
     redirect('/')
 
 
-    
-
-
-
-
-
-
-
-
-
-
-
 @get('/vpogledextra')
 def vpogledextra():
-    emso= request.query.emso
-    ime= request.query.ime
-    priimek= request.query.priimek
-    
+    emso = request.query.emso
+    ime = request.query.ime
+    priimek = request.query.priimek
 
     cur.execute("""SELECT emso, ime, priimek FROM oseba
-    WHERE emso = %s and ime = %s and priimek = %s""" , [emso, ime, priimek] )
-    return template('pacient.html', osebe = cur)
-
+    WHERE emso = %s and ime = %s and priimek = %s""", [emso, ime, priimek])
+    return template('pacient.html', osebe=cur)
 
 
 @get('/vpogled')
 def vpogled():
-    return template('vpogled.html', napaka = "" , ime="" , priimek="", emso="" )
+    return template('vpogled.html', napaka="", ime="", priimek="", emso="")
 
 ######################################################################
 # Glavni program
 
+
 # priklopimo se na bazo
-baza = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
-#conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT) # onemogočimo transakcije
+baza = psycopg2.connect(database=auth.db, host=auth.host,
+                        user=auth.user, password=auth.password, port=DB_PORT)
+# conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT) # onemogočimo transakcije
 cur = baza.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 # poženemo strežnik na podanih vratih, npr. http://localhost:8080/
