@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 ############################################################################################
 import os
+
+from sqlalchemy import false
 from bottle import *
 from bottleext import get, post, run, request, template, redirect, static_file, url
 import bottle
@@ -50,14 +52,14 @@ def password_hash(s):
 
 def get_user(auto_login=True):
     """Poglej cookie in ugotovi, kdo je prijavljeni uporabnik,
-    vrni njegov username in ime. Če ni prijavljen, presumeri
+    vrni njegov emso. Če ni prijavljen, preusmeri
     na stran za prijavo ali vrni None (advisno od auto_login).
     """
     # Dobimo username iz piškotka
     username = request.get_cookie('username', secret=secret)
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
-        cur.execute("SELECT username, emso FROM uporabnik WHERE username=%s",
+        cur.execute("SELECT emso FROM uporabnik WHERE username=%s",
                     [username])
         r = cur.fetchone()
         if r is not None:
@@ -70,46 +72,50 @@ def get_user(auto_login=True):
         return None
 
 
-def get_my_profile():
+def get_my_profile(emso):
     """Funkcija glede na vlogo vrača podatke za kartico osebe."""
-    (_, emso) = get_user()
-    cur.execute("SELECT * FROM oseba WHERE emso = %s", [emso])
+    cur.execute("SELECT * FROM oseba WHERE emso = %s", emso)
     return cur.fetchone()
 
 
 def is_doctor(emso):
     """Funkcija za danega uporabnika preveri, če je zdravnik"""
     cur.execute(
-        "SELECT exists (SELECT 1 FROM zdravstveni_delavec WHERE emso = %s LIMIT 1);", [emso])
-    return cur.fetchone()[0]
+        "SELECT exists (SELECT 1 FROM zdravstveni_delavec WHERE emso = %s LIMIT 1);", emso)
+    return cur.fetchone()
 
 
 def is_vaxed(emso):
     """Funkcija za danega uporabnika preveri, če je cepljen"""
     cur.execute(
-        "SELECT exists (SELECT 1 FROM oseba WHERE emso = %s AND cepivo IS NOT NULL)", [emso])
-    return cur.fetchone()[0]
+        "SELECT exists (SELECT 1 FROM oseba WHERE emso = %s AND cepivo IS NOT NULL)", emso)
+    return cur.fetchone()
 
 
 def add_to_hospital(emso_zdravnika, emso_pacienta):
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
-    cur.execute("SELECT *")
+    # TODO naredi insert
 
 
 def vax_id(emso):
     """Funkcija vrne ime cepiva, če ji podamo id cepiva"""
-    cur.execute("SELECT ime_cepiva FROM cepivo WHERE oseba(emso) = %s", [emso])
+    cur.execute("SELECT ime_cepiva FROM cepivo WHERE oseba(emso) = %s", emso)
+    return cur.fetchone()
 
 
 def hospital_id(emso):
     """Funkcija vrača id bolnice v kateri dela trenutni uporabnik"""
-    # TODO
+    cur.execute("SELECT id_bolnisnice FROM zdravstveni_delavec WHERE emso = %s", emso)
+    return cur.fetchone() 
 
-
-def remove_pacient(ime, priimek):
+    
+def remove_pacient(emso):
     """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz tabele. Pravice imajo samo zdravstveni delavci."""
-    cur.execute("SELECT ime, priimek, emso FROM pacient")
-    return cur.fetchall
+    print(emso)
+    hospital = hospital_id(emso)
+    print(hospital)
+    cur.execute("SELECT ime, priimek, emso FROM odstrani_pacienta WHERE id_bolnisnice = %s", hospital)
+    return cur.fetchall()
 
 
 def vax_pacient(ime, priimek, cepivo):
@@ -129,8 +135,9 @@ def static(filename):
 @route("/")
 def main():
     """Glavna stran."""
-    profil = get_my_profile()
-    return template("user.html", profil, is_doctor=is_doctor(profil[0]), is_vaxed=is_vaxed(profil[0]))
+    emso = get_user()
+    profil = get_my_profile(emso)
+    return template("user.html", profil, is_doctor=is_doctor(emso), is_vaxed=is_vaxed(emso))
 
 
 @route("/login/")
@@ -220,8 +227,7 @@ def logout():
 @route("/add_pacient/")
 def add_pacient_get():
     """Forma za dodajanje pacientov"""
-    (_, emso) = get_user()
-    if is_doctor(emso):
+    if is_doctor(get_user()):
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka=None)
     else:
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Nimate pravic za dodajanje pacienta.")
@@ -237,15 +243,22 @@ def add_pacient_post():
 @route('/pct_certificate/')
 def pct_certificate():
     """Serviraj formo za PCT potrdilo"""
-    user = get_my_profile()
-    return template("pct_certificate.html", user)
-
+    emso = get_user()
+    if is_vaxed(emso):
+        return template("pct_certificate.html", get_my_profile(emso))
+    else:
+        # TODO naredi napako na vrhu htmlja
+        return
 
 @route("/remove_pacient/")
 def remove_get():
     """Serviraj formo za odstranitev pacienta"""
-    return template('remove_pacient.html', pacient=remove_pacient())
-
+    emso = get_user()
+    if is_doctor(emso):
+        return template('remove_pacient.html', pacienti=remove_pacient(emso))
+    else:
+        # TODO naredi napako na vrhu htmlja
+        return
 
 @post("/remove_pacient")
 def remove_post():
