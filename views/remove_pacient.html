@@ -26,7 +26,7 @@
   <body>
     <div class="container">
         <h2>Tabela pacientov</h2>
-
+        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
         <table class="table">
             <thead>
               <tr>
@@ -42,8 +42,8 @@
                     <td>{{ime}}</td>
                     <td>{{priimek}}</td>
                     <td>{{emso}}</td>
-                    <td><a class="margin-gor-dol btn  btn-primary" href="/remove/{{emso}}">Odstrani</a>
-                        <a class="margin-gor-dol btn btn-primary " href="/pct_certificate}}">Vpogled</a></td>
+                    <td><a class="margin-gor-dol btn  btn-primary"  href="/remove/{{emso}}">Odstrani</a>
+                        <a class="margin-gor-dol btn btn-primary " href="/pct_certificate/{{emso}}">Vpogled</a></td>
 
                     </tr>
                     %end
@@ -52,6 +52,7 @@
               
             </tbody>
           </table>
+        </form>
       </div> <!-- /container -->
   </body>
 </html>
