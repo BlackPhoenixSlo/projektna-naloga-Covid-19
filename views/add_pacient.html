@@ -29,6 +29,9 @@
         <h2>Dodaj pacienta</h2>
 
         <form>
+          %if napaka:
+          <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
+          %end
             <div class="form-group">
               <label for="Ime-input">Ime</label>
               <input type="text" class="form-control" id="ime"  placeholder="Ime">
