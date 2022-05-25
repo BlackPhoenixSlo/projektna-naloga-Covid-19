@@ -31,15 +31,6 @@
             %if stalno_prebivalisce:
             <h5>Prebivališče: </h5><li class="list-group-item">{{stalno_prebivalisce}}</li>
             %end
-            %if datum_testiranja:
-            <h5>Datum testiranja: </h5><li class="list-group-item">{{datum_testiranja}}</li>
-            %end
-            %if rezultat_test:
-            <h5>Rezultat testa: </h5><li class="list-group-item">{{rezultat_test}}</li>
-        %end
-        %if cepivo:
-        <h5>Cepivo: </h5><li class="list-group-item">{{cepivo}}</li>
-        %end
           </ul>
 
 
@@ -55,7 +46,7 @@
             <a class="margin-gor-dol btn btn-lg btn-primary btn-block"  href="/add_pacient/">Dodaj pacienta</a>
    
         %end
-        %if is_vaxed:
+        %if is_vaxed or is_tested:
        
             <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/pct_certificate/">PCT potrdilo</a>
      
