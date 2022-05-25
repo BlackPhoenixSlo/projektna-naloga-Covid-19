@@ -25,23 +25,40 @@
           %if napaka:
           <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
           %end
-  
-          <input type="username" class="margin-gor-dol form-control" placeholder="Uporabniško ime"
+          <br>
+          <label for="Ime-input">Uporabniško ime:</label>
+
+          <input type="username" class="margin-gor-dol form-control" placeholder="JanezPreseren"
                  %if username:
                  value="{{username}}"
                  %end
                  name="username"
                  required autofocus>
-          <input type="username" class="margin-gor-dol form-control" placeholder="emso"
+
+          <br>
+          <label for="Ime-input">Emso:</label>
+
+          <input type="username" class="margin-gor-dol form-control" placeholder="2811999500019"
                  %if emso:
                  value="{{emso}}"
                  %end
                  name="emso"
                  required>
-          <input type="password" class="margin-gor-dol form-control" placeholder="Geslo" name="password1" required>
-          <input type="password" class="margin-gor-dol form-control" placeholder="Geslo" name="password2" required>
+                 <br>
+                 <label for="Ime-input">Geslo:</label>
+
+          <input type="password" class="margin-gor-dol form-control" placeholder="ASas!@12" name="password1" required>
+          <br>
+          <label for="Ime-input">Potrdi geslo:</label>
+
+          <input type="password" class="margin-gor-dol form-control" placeholder="ASas" name="password2" required>
+          <br>
+
           <button class="margin-gor-dol btn btn-lg btn-primary btn-block margin-gor-dol" type="submit">Registriraj se</button>
         </form>
+        <br>
+
+        <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/" >Domov</a>
       </div> <!-- /container -->
   </body>
 
