@@ -129,6 +129,13 @@ def hospital_id(id):
     return cur.fetchone()[0]
 
 
+def hospital_name(id):
+    """Funkcija vrača ime bolnisnice v kateri je uporabnik z idjem"""
+    if is_doctor(id):
+        cur.execute("SELECT ime_bolnisnice FROM bolnisnica WHERE id_bolnisnice=%s", [hospital_id(id)])
+        return cur.fetchone()[0]
+
+
 def remove_pacient(id):
     """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz tabele. Pravice imajo samo zdravstveni delavci."""
     hospital = hospital_id(id)
@@ -139,7 +146,7 @@ def remove_pacient(id):
 
 def vax_pacient(ime, priimek, cepivo):
     """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
-
+    # TODO
 
 def test_last_date(id):
     if is_tested(id):
@@ -180,7 +187,7 @@ def main():
     """Glavna stran."""
     id = get_user()
     # TODO dodaj še eno polje, ki prikaže ime bolnice, če je oseba zdravstveni delavec
-    return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id))
+    return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id))
 
 
 @route("/login/")
@@ -284,11 +291,9 @@ def add_pacient_post():
     priimek = request.forms.priimek
     emso = request.forms.emso
     doctor_id = get_user()
-    hospital_id = hospital_id(doctor_id)
     if verify_user(ime, priimek, emso):
-        # TODO popravi HTML tako da bo omogočal post methodo na gumb dodaj
-        add_to_hospital(get_id_from(emso), hospital_id)
-        redirect('/remove_pacient')
+        add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
+        redirect('/remove_pacient/')
     else:
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Podatki pacienta se ne ujemajo")
 
