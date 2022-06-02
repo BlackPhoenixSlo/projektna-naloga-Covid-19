@@ -16,6 +16,12 @@ body{
 
 .butni{
    width: 50%;
+   font-display: flex;
+   flex-wrap: wrap;
+   justify-content: space-between;
+   margin: 50px;
+   background-color: #111111;
+
 }
 
 .margin-gor-dol {
@@ -23,4 +29,19 @@ body{
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.levi{
+
+    background-color: #111111;
+}
+
+.levi{
+    width: 50%;
+    font-display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 50px;
+    background-color: #111111;
+ 
+ }
 

@@ -11,6 +11,8 @@
     </head>
     <body>
     <div class="container">
+
+        
         <h2>Pozdravljen!</h2>
 
         <ul class="list-group">
@@ -36,25 +38,29 @@
         
        
         
-        <div class="butni">
-            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/logout/" >Odjava</a>
+        
+           
       
         %if is_doctor:
       
-            <a class="margin-gor-dol btn btn-lg btn-primary btn-block"  href="/add_pacient/">Dodaj pacienta</a>
-   
+            <a class="margin-gor-dol btn btn-lg btn-primary"  href="/add_pacient/">Dodaj pacienta</a>
+        
         %end
+        
+        %if is_doctor:
+       
+            <a class="margin-gor-dol btn btn-lg btn-primary" href="/remove_pacient/">Odstrani pacienta</a>
+      
+        %end
+
         %if is_vaxed or is_tested:
        
-            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/pct_certificate/">PCT potrdilo</a>
+            <a class="margin-gor-dol btn btn-lg btn-primary" href="/pct_certificate/">PCT potrdilo</a>
      
         %end
-        %if is_doctor:
-       
-            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="/remove_pacient/">Odstrani pacienta</a>
-      
-        %end
-        </div>
+
+        <a class="margin-gor-dol btn btn-lg btn-primary" href="/logout/" >Odjava</a>
+    
     </div>
     </body>
 </html>
