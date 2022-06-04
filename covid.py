@@ -320,7 +320,7 @@ def pacient_certificate(x):
     id = get_user()
     id_pacienta = get_id_from(x)
     if is_doctor(id):
-        return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pac))
+        return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta))
 
 
 @route("/remove_pacient/")
