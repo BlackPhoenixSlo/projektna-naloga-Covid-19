@@ -43,13 +43,13 @@
       
         %if is_doctor:
       
-            <a class="margin-gor-dol btn btn-lg btn-primary"  href="/add_pacient/">Dodaj pacienta</a>
+            <a class="margin-gor-dol btn btn-lg btn-primary"  href="{{url('add_pacient_get')}}">Dodaj pacienta</a>
         
         %end
         
         %if is_doctor:
        
-            <a class="margin-gor-dol btn btn-lg btn-primary" href="/remove_pacient/">Odstrani pacienta</a>
+            <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('remove_get')}}">Odstrani pacienta</a>
       
         %end
 

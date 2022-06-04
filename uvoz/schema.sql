@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS testiranje (
     rezultat_testa BOOLEAN NOT NULL
 );
 
-CREATE OR REPLACE VIEW odstrani_pacienta AS
+CREATE
+OR REPLACE VIEW odstrani_pacienta AS
 SELECT
     oseba.ime,
     oseba.priimek,
@@ -63,8 +64,6 @@ SELECT
 FROM
     pacient
     JOIN oseba ON oseba.id_osebe = pacient.id_osebe;
-
-CREATE OR REPLACE VIEW 
 
 GRANT ALL ON ALL TABLES IN SCHEMA public TO tinm WITH GRANT OPTION;
 
@@ -87,3 +86,5 @@ INSERT
 GRANT
 INSERT
     ON pacient TO javnost;
+
+GRANT DELETE ON pacient TO javnost;

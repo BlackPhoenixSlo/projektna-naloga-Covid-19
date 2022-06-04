@@ -156,6 +156,12 @@ def test_last_date(id):
     else:
         return False
 
+def delete_pacient(id):
+    """ Funkcija izbriše bolnika id-jem"""
+    cur.execute("DELETE FROM pacient WHERE id_osebe = %s", [id])
+    baza.commit()
+
+
 
 def test_result(id):
     if is_tested(id):
@@ -308,6 +314,14 @@ def pct_certificate():
         # TODO naredi napako na vrhu htmlja
         return
 
+@route('/pct_certificate/<x>')
+def pacient_certificate(x):
+    """Serviraj formo za pacientovo PCT potrdilo"""
+    id = get_user()
+    id_pacienta = get_id_from(x)
+    if is_doctor(id):
+        return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pac))
+
 
 @route("/remove_pacient/")
 def remove_get():
@@ -320,11 +334,18 @@ def remove_get():
         return
 
 
-@post("/remove_pacient")
-def remove_post():
+@route("/remove_pacient/<x>/")
+def remove_post(x):
     """Odstrani uporabnika"""
-    # TODO popravi HTML tako da bo omogočal post methodo na gumb dodaj potem bom dodal metodo da jih odstrani
-    redirect('/')
+    id_uporabnika = get_user()
+    if is_doctor(id_uporabnika):
+        id = get_id_from(x)
+        delete_pacient(id)
+        redirect(url("remove_get"))
+    else:
+        # TODO naredi napako na vrhu htmlja
+        return
+
 
 
 # @get('/vpogledextra')
