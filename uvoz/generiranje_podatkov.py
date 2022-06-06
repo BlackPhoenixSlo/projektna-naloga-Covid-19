@@ -66,7 +66,7 @@ moska_imena["stevilo"] = pd.to_numeric(moska_imena["stevilo"])
 zenska_imena["stevilo"] = pd.to_numeric(zenska_imena["stevilo"])
 priimki["stevilo"] = pd.to_numeric(priimki["stevilo"])
 
-# Izracunavanje deleza kot cenilka za slovensko populacijo
+# Izracunavanje deleza za cenilko verjetnosti imena za slovensko populacijo
 moska_imena["delez"] = (moska_imena['stevilo'] / moska_imena['stevilo'].sum())
 zenska_imena["delez"] = (zenska_imena['stevilo'] /
                          zenska_imena['stevilo'].sum())
@@ -95,7 +95,7 @@ precepljenost_prebivalstva = delez_prve + delez_druge + delez_tretje
 
 
 def random_date_generator(start_date):
-    """Funkcija vraca nakljucni datum, glede na zaceteke. Zadnji datum je danasnji."""
+    """Funkcija vraca nakljucni datum, glede na zaceteke. Zadnji datum je danasnji. Vraca v formatu primernem za generiranje emsa."""
     num_of_days = (datetime.now() -
                    datetime.strptime(start_date, '%d-%m-%Y')).days
     days = rng.choice(num_of_days, replace=False)
@@ -126,6 +126,7 @@ def generiraj_emso(zenska):
 
 
 def izberi_cepivo():
+    """Funkcija izbere nakljucni id cepiva, glede na zgornje verjetnosti."""
     # Stevilo 0 uporabljam kot da oseba ni cepljena
     vrednosti = np.arange(0, stevilo_cepiv)
     verjetnosti_cepiva = [prebivalstvo_slovenije * precepljenost_prebivalstva /
@@ -136,10 +137,12 @@ def izberi_cepivo():
 
 
 def potek_cepljenja(id):
+    """Funkcija vraca seznam slovarjev, ki doloceni osebi pripise zgodovino cepljenja."""
     cepivo = izberi_cepivo()
     stevilo_odmerkov = rng.choice(
         [1, 2, 3], 1, [delez_prve, delez_druge, delez_tretje])
-    datum_cepljenja = datetime.strptime(random_date_generator("27-12-2020"), '%d%m%Y').strftime("%d-%m-%Y")
+    datum_cepljenja = datetime.strptime(random_date_generator(
+        "27-12-2020"), '%d%m%Y').strftime("%d-%m-%Y")
     evidenca_osebe = []
     if cepivo > 0:
         evidenca_osebe.append(
@@ -153,6 +156,7 @@ def potek_cepljenja(id):
 
 
 def testiraj_osebo(verjetnost_testa=verjetnost_testa):
+    """Funkcija vraca nakljucni rezultat testa glede na verjetnost testa."""
     rezultat_testa = np.random.binomial(1, verjetnost_testa) > 0
     return rezultat_testa
 
@@ -190,10 +194,8 @@ def generiraj_prebivalstvo(prebivalci=prebivalstvo_slovenije):
 
 def copy_from_stringio(conn, df, table):
     """
-    Here we are going save the dataframe in memory 
-    and use copy_from() to copy it to the table
+    Funkcija prepise dataframe v csv, ki je shranjen v stringio-ju in ga pošlje na bazo.
     """
-    # save dataframe to an in memory buffer
     buffer = StringIO()
     df.to_csv(buffer, header=False)
     buffer.seek(0)
@@ -239,11 +241,11 @@ pacient = bolnisnicni.sample(frac=0.8)
 
 
 # Tisti, ki so v bolnici in niso pacienti, so zdravstveni delavci
-zdravstveni_delavec = bolnisnicni[bolnisnicni["id_osebe"].isin(pacient["id_osebe"]) == False]
+zdravstveni_delavec = bolnisnicni[bolnisnicni["id_osebe"].isin(
+    pacient["id_osebe"]) == False]
 
 pacient.set_index("id_osebe", drop=True, inplace=True)
 zdravstveni_delavec.set_index("id_osebe", drop=True, inplace=True)
-
 
 
 # 8. tabela - cepljenje
@@ -252,16 +254,15 @@ for id_osebe in oseba.index.values:
     seznam_oseb = seznam_oseb + potek_cepljenja(id_osebe)
 cepljenje = pd.DataFrame(seznam_oseb)
 cepljenje.set_index("id_osebe", drop=True, inplace=True)
-    
+
 # 9. tabela - testiranje
 seznam_testiranj = []
 testirana_populacija = oseba.sample(frac=0.4).index.values
 for id_osebe in testirana_populacija:
-    seznam_testiranj.append({"id_osebe": id_osebe, "datum_testa": datetime.strptime(random_date_generator("27-12-2020"), '%d%m%Y').strftime("%d-%m-%Y"), "rezultat_testa": testiraj_osebo()})
+    seznam_testiranj.append({"id_osebe": id_osebe, "datum_testa": datetime.strptime(random_date_generator(
+        "27-12-2020"), '%d%m%Y').strftime("%d-%m-%Y"), "rezultat_testa": testiraj_osebo()})
 testiranje = pd.DataFrame(seznam_testiranj)
 testiranje.set_index("id_osebe", drop=True, inplace=True)
-
-
 
 
 def main():
@@ -269,10 +270,10 @@ def main():
     copy_from_stringio(conn=conn, df=oseba, table="oseba")
     copy_from_stringio(conn=conn, df=bolnisnica, table="bolnisnica")
     copy_from_stringio(conn=conn, df=pacient, table="pacient")
-    copy_from_stringio(conn=conn, df=zdravstveni_delavec, table="zdravstveni_delavec")
+    copy_from_stringio(conn=conn, df=zdravstveni_delavec,
+                       table="zdravstveni_delavec")
     copy_from_stringio(conn=conn, df=cepljenje, table="cepljenje")
     copy_from_stringio(conn=conn, df=testiranje, table="testiranje")
-    
 
 
 if __name__ == '__main__':
