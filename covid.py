@@ -79,7 +79,7 @@ def get_my_profile(id):
 
 
 def get_id_from(emso):
-    """Funkcija vraca emso stevilko glede na id osebe."""
+    """Funkcija vraca id glede na emso osebe"""
     cur.execute("SELECT id_osebe FROM oseba WHERE emso = %s", [emso])
     return cur.fetchone()[0]
 
@@ -132,12 +132,13 @@ def hospital_id(id):
 def hospital_name(id):
     """Funkcija vrača ime bolnisnice v kateri je uporabnik z idjem"""
     if is_doctor(id):
-        cur.execute("SELECT ime_bolnisnice FROM bolnisnica WHERE id_bolnisnice=%s", [hospital_id(id)])
+        cur.execute("SELECT ime_bolnisnice FROM bolnisnica WHERE id_bolnisnice=%s", [
+                    hospital_id(id)])
         return cur.fetchone()[0]
 
 
 def remove_pacient(id):
-    """Funkcija poisce pacienta v doloceni bolnicni in ga odstrani iz tabele. Pravice imajo samo zdravstveni delavci."""
+    """Funkcija poisce pacienta v doloceni bolnisnici in ga odstrani iz tabele. Pravice imajo samo zdravstveni delavci."""
     hospital = hospital_id(id)
     cur.execute(
         "SELECT ime, priimek, emso FROM odstrani_pacienta WHERE id_bolnisnice = %s", [hospital])
@@ -148,7 +149,9 @@ def vax_pacient(ime, priimek, cepivo):
     """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
     # TODO
 
+
 def test_last_date(id):
+    """Funkcija vrača datum zadnjega testiranja, če je bila oseba z id-jem testirana. Drugače vrne False."""
     if is_tested(id):
         cur.execute(
             "SELECT datum_testa FROM testiranje WHERE id_osebe=%s ORDER BY datum_testa DESC", [id])
@@ -156,14 +159,15 @@ def test_last_date(id):
     else:
         return False
 
+
 def delete_pacient(id):
-    """ Funkcija izbriše bolnika id-jem"""
+    """Funkcija izbriše bolnika id-jem"""
     cur.execute("DELETE FROM pacient WHERE id_osebe = %s", [id])
     baza.commit()
 
 
-
 def test_result(id):
+    """Funkcija vrača rezultat zadnjega testa, če je bila oseba testirana. Drugače vrne False."""
     if is_tested(id):
         cur.execute(
             "SELECT rezultat_testa FROM testiranje WHERE id_osebe=%s ORDER BY datum_testa DESC", [id])
@@ -173,6 +177,7 @@ def test_result(id):
 
 
 def verify_user(ime, priimek, emso):
+    """Funkcija preverja, če se ime, priimek in emso skladajo s podatki iz baze."""
     cur.execute(
         "SELECT exists (SELECT * FROM oseba WHERE ime=%s AND priimek=%s AND emso=%s)", [ime, priimek, emso])
     return cur.fetchone()[0]
@@ -192,7 +197,6 @@ def static(filename):
 def main():
     """Glavna stran."""
     id = get_user()
-    # TODO dodaj še eno polje, ki prikaže ime bolnice, če je oseba zdravstveni delavec
     return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id))
 
 
@@ -222,7 +226,7 @@ def login_post():
     else:
         # Vse je v redu, nastavimo cookie in preusmerimo na glavno stran
         response.set_cookie('username', username, path='/', secret=secret)
-        redirect("/")
+        redirect(url("main"))
 
 
 @route("/register/")
@@ -314,6 +318,7 @@ def pct_certificate():
         # TODO naredi napako na vrhu htmlja
         return
 
+
 @route('/pct_certificate/<x>')
 def pacient_certificate(x):
     """Serviraj formo za pacientovo PCT potrdilo"""
@@ -321,6 +326,9 @@ def pacient_certificate(x):
     id_pacienta = get_id_from(x)
     if is_doctor(id):
         return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta))
+    else:
+        # TODO naredi napako na vrhu htmlja
+        return
 
 
 @route("/remove_pacient/")
@@ -346,22 +354,6 @@ def remove_post(x):
         # TODO naredi napako na vrhu htmlja
         return
 
-
-
-# @get('/vpogledextra')
-# def vpogledextra():
-#     emso = request.query.emso
-#     ime = request.query.ime
-#     priimek = request.query.priimek
-
-#     cur.execute("""SELECT emso, ime, priimek FROM oseba
-#     WHERE emso = %s and ime = %s and priimek = %s""", [emso, ime, priimek])
-#     return template('pacient.html', osebe=cur)
-
-
-# @get('/vpogled')
-# def vpogled():
-#     return template('vpogled.html', napaka="", ime="", priimek="", emso="")
 
 ######################################################################
 # Glavni program
