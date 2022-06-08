@@ -66,7 +66,7 @@ def get_user(auto_login=True):
             return r
     # Če pridemo do sem, uporabnik ni prijavljen, naredimo redirect
     if auto_login:
-        redirect('/login/')
+        redirect(url("login_get"))
     else:
         return None
 
@@ -267,7 +267,7 @@ def register_post():
             cur.execute("INSERT INTO uporabnik (username, password, id_osebe) VALUES (%s, %s, %s)", [
                         username, password, id])
             baza.commit()
-        except psycopg2.errors.ForeignKeyViolation:
+        except TypeError:
             print("Uporabnika ni v bazi registriranih oseb")
             return template("register.html",
                             username=username,
@@ -275,14 +275,14 @@ def register_post():
                             napaka='Dane emso stevilke ni v bazi oseb. Posvetujte se z zdravnikom.')
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
-        redirect("/login/")
+        redirect(url("login_get"))
 
 
 @route("/logout/")
 def logout():
     """Pobriši cookie in preusmeri na login."""
     response.delete_cookie('username', path='/')
-    redirect('/login/')
+    redirect(url("login_get"))
 
 
 @route("/add_pacient/")
@@ -303,7 +303,7 @@ def add_pacient_post():
     doctor_id = get_user()
     if verify_user(ime, priimek, emso):
         add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
-        redirect('/remove_pacient/')
+        redirect(url("remove_get"))
     else:
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Podatki pacienta se ne ujemajo")
 
