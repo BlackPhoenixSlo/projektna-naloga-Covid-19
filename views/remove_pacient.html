@@ -28,8 +28,8 @@
                     <td>{{ime}}</td>
                     <td>{{priimek}}</td>
                     <td>{{emso}}</td>
-                    <td><a class="margin-gor-dol btn  btn-primary"  href="{{url('remove_post', x={{emso}})}}">Odstrani</a>
-                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x={{emso}})}}">Vpogled</a></td>
+                    <td><a class="margin-gor-dol btn  btn-primary"  href="{{url('remove_post({{emso}})')}}">Odstrani</a>
+                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate({{emso}})')}}">Vpogled</a></td>
 
                     </tr>
                     %end
