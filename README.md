@@ -30,5 +30,5 @@ geslo: `tadej`
 
 
 ### SQL diagram
-![SQL DIAGRAM](SQL_diagram.png)
+![SQL DIAGRAM](SQL_diagram.jpg)
 
