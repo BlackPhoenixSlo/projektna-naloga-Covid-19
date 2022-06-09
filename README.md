@@ -11,10 +11,12 @@ Ker podatkov ni mogoče pridobiti, sva podatke generirala preko spletnih virov n
 
 ### zdravstveni delavec
 uporabniško ime: `admin`
+
 geslo: `admin`
 
 ### pacient
 uporabniško ime: `tadej`
+
 geslo: `tadej`
 
 
