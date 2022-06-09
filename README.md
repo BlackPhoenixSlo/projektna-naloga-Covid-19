@@ -23,5 +23,5 @@ geslo: `tadej`
 ### Opomba
 Svojih računov z lastnimi podatki ni mogoče kreirati, saj aplikacija v odzadju preverja ali so dani podatki res v bazi prebivalstva.
 
-
+### ER diagram
 ![ER DIAGRAM](ER_diagram.png)
