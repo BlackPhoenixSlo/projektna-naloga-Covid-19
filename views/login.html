@@ -1,20 +1,29 @@
 %rebase('base.html', naslov='Prijava')
-<div class="container">
-    <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-      <h2 class="form-signin-heading margin-gor-dol">Prijava</h2>
-      %if napaka:
-      <div class="alert alert-warning margin-gor-dol">{{napaka}}</div>
-      %end
-      <input  type="username" class="form-control margin-gor-dol" placeholder="Uporabniško ime"
-              %if username:
-              value="{{username}}"
-              %end
-              name="username"
-              required autofocus>
-      <input type="password" class="form-control" placeholder="Geslo" name="password" required>
-      <button class="margin-gor-dol btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
-      <div>
-        <a href="{{url('register_get')}}">Registracija</a>
+<body class="text-center">
+    
+  <main class="form-signin w-100 m-auto">
+    %if napaka:
+    <div class="alert alert-danger" role="alert">
+      {{napaka}}
+    </div>
+    %end
+    <form method="post" action=".">
+      <img class="mb-4" src="\static\android-chrome-192x192.png" alt="" width="192" height="192">
+      <h1 class="h3 mb-3 fw-normal">Prijava</h1>
+  
+      <div class="form-floating">
+        <input type="username" class="form-control" id="floatingInput" name=username placeholder="tadej">
+        <label for="floatingInput">Uporabnisko ime</label>
       </div>
+      <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" name=password placeholder="tadej">
+        <label for="floatingPassword">Geslo</label>
+      </div>
+      <button class="w-100 btn btn btn-outline-primary" type="submit">Prijavi se</button>
     </form>
-</div>
+    <a class="btn btn-primary btn btn-secondary btn-sm" href="{{url('register_get')}}" role="button">Registriraj se</a>
+  </main>
+  
+  
+      
+    </body>

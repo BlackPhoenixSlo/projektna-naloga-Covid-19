@@ -208,9 +208,7 @@ def main():
 @route("/login/")
 def login_get():
     """Serviraj formo za login."""
-    return template("login.html",
-                    napaka=None,
-                    username=None)
+    return template("login.html", napaka=None)
 
 
 @post("/login/")
