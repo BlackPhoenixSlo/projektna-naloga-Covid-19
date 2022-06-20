@@ -1,34 +1,20 @@
-
-<!DOCTYPE html>
-<html lang="si">
-  <head>
-    
-
-    
-    %rebase('base.html', naslov='Prijava')
-
-
-    <title>COVID portal - prijava</title>
-  </head>
-  <body>
-    <div class="container">
-        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-          <h2 class="form-signin-heading margin-gor-dol">Prijava</h2>
-          %if napaka:
-          <div class="alert alert-warning margin-gor-dol">{{napaka}}</div>
-          %end
-          <input  type="username" class="form-control margin-gor-dol" placeholder="Uporabniško ime"
-                 %if username:
-                 value="{{username}}"
-                 %end
-                 name="username"
-                 required autofocus>
-          <input type="password" class="form-control" placeholder="Geslo" name="password" required>
-          <button class="margin-gor-dol btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
-          <div>
-            <a href="{{url('register_get')}}">Registracija</a>
-          </div>
-        </form>
-      </div> <!-- /container -->
-  </body>
-</html>
+%rebase('base.html', naslov='Prijava')
+<div class="container">
+    <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
+      <h2 class="form-signin-heading margin-gor-dol">Prijava</h2>
+      %if napaka:
+      <div class="alert alert-warning margin-gor-dol">{{napaka}}</div>
+      %end
+      <input  type="username" class="form-control margin-gor-dol" placeholder="Uporabniško ime"
+              %if username:
+              value="{{username}}"
+              %end
+              name="username"
+              required autofocus>
+      <input type="password" class="form-control" placeholder="Geslo" name="password" required>
+      <button class="margin-gor-dol btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
+      <div>
+        <a href="{{url('register_get')}}">Registracija</a>
+      </div>
+    </form>
+</div>

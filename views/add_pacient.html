@@ -1,44 +1,32 @@
+%rebase('base.html', naslov='Pacienti')
+<div class="container">
+    <h2>Dodaj pacienta</h2>
 
-<!DOCTYPE html>
-<html lang="si">
-  <head>
+    <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
+      %if napaka:
+      <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
+      %end
+        <div class="form-group">
+          <label for="Ime-input">Ime</label>
+          <input type="text" class="form-control" name="ime"  placeholder="Ime">
+          <small id="" class="form-text text-muted">Napiši pacientovo ime.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Priimek</label>
+            <input type="text" class="form-control" name="priimek"  placeholder="Priimek">
+            <small id="" class="form-text text-muted">Napiši pacientov priimek.</small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Emšo</label>
+            <input type="text" class="form-control" name="emso"  placeholder="Emšo">
+            <small id="" class="form-text text-muted">Napiši pacientovo emšo.</small>
+          </div>
 
-    %rebase('base.html', naslov='Pacienti')
-
-    <title>COVID portal - prijava</title>
-  </head>
-  <body>
-
-    <div class="container">
-        <h2>Dodaj pacienta</h2>
-
-        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-          %if napaka:
-          <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
-          %end
-            <div class="form-group">
-              <label for="Ime-input">Ime</label>
-              <input type="text" class="form-control" name="ime"  placeholder="Ime">
-              <small id="" class="form-text text-muted">Napiši pacientovo ime.</small>
-            </div>
-            <div class="form-group">
-                <label for="exampleInputEmail1">Priimek</label>
-                <input type="text" class="form-control" name="priimek"  placeholder="Priimek">
-                <small id="" class="form-text text-muted">Napiši pacientov priimek.</small>
-              </div>
-              <div class="form-group">
-                <label for="exampleInputEmail1">Emšo</label>
-                <input type="text" class="form-control" name="emso"  placeholder="Emšo">
-                <small id="" class="form-text text-muted">Napiši pacientovo emšo.</small>
-              </div>
-
-            
-          
-            <button type="submit" class="margin-gor-dol btn btn-lg btn-primary btn-block" >Dodaj</button>
-           
-                <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="{{url('main')}}">Domov</a>
-          
-          </form>
-    </div>
-  </body>
-</html>
+        
+      
+        <button type="submit" class="margin-gor-dol btn btn-lg btn-primary btn-block" >Dodaj</button>
+        
+            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="{{url('main')}}">Domov</a>
+      
+      </form>
+</div>
