@@ -19,8 +19,30 @@
         <a href="{{url('logout')}}" class="btn btn-primary">Odjava</a>
       </div>
     </header>
+
+    <div class="card text-center" style="width: 18rem;">
+      <img src="/static/user_qrcodes/user_{{id}}.png" class="card-img-top" alt="...">
+      <div class="card-body">
+        %if ime:
+        <h5 class="card-title">{{ime}} {{priimek}}</h5>
+        %end
+      </div>
+      <ul class="list-group list-group-flush">
+        %if emso:
+        <li class="list-group-item">{{emso}}</li>
+        %end
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Vestibulum at eros</li>
+      </ul>
+      <div class="card-body">
+        <a href="#" class="card-link">Card link</a>
+        <a href="#" class="card-link">Another link</a>
+      </div>
+    </div>
 </div>
 
+
+<!-- 
     <div class="container">
 
         
@@ -72,4 +94,4 @@
 
         <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('logout')}}" >Odjava</a>
     
-    </div>
+    </div> -->
