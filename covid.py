@@ -51,7 +51,7 @@ def password_hash(s):
 
 def get_user(auto_login=True):
     """Poglej cookie in ugotovi, kdo je prijavljeni uporabnik,
-    vrni njegov emso. Če ni prijavljen, preusmeri
+    vrni njegov id. Če ni prijavljen, preusmeri
     na stran za prijavo ali vrni None (advisno od auto_login).
     """
     # Dobimo username iz piškotka
@@ -72,7 +72,7 @@ def get_user(auto_login=True):
 
 
 def get_my_profile(id):
-    """Funkcija glede na vlogo vrača podatke za kartico osebe."""
+    """Funkcija vrača splošne podatke osebe"""
     cur.execute(
         "SELECT ime, priimek, emso, stalno_prebivalisce FROM oseba WHERE id_osebe = %s", [id])
     return cur.fetchone()
@@ -113,7 +113,7 @@ def add_to_hospital(pacient_id, hospital_id):
 
 
 def vax_id(id):
-    """Funkcija vrne ime cepiva, če ji podamo id cepiva"""
+    """Funkcija vrne ime cepiva, če ji podamo id cepljene osebe"""
     if is_vaxed(id):
         cur.execute(
             "SELECT ime_cepiva FROM cepivo WHERE id_cepiva = (SELECT DISTINCT id_cepiva FROM cepljenje WHERE id_osebe=%s)", [id])
@@ -123,7 +123,7 @@ def vax_id(id):
 
 
 def hospital_id(id):
-    """Funkcija vrača id bolnice v kateri dela trenutni uporabnik"""
+    """Funkcija vrača id bolnisnice v kateri dela trenutni uporabnik"""
     cur.execute(
         "SELECT id_bolnisnice FROM zdravstveni_delavec WHERE id_osebe = %s", [id])
     return cur.fetchone()[0]
@@ -145,8 +145,8 @@ def remove_pacient(id):
     return cur.fetchall()
 
 
-def vax_pacient(ime, priimek, cepivo):
-    """Funkcija v bazi popravi podatek o cepljenu dolocenega pacienta. Ce osebe ni v bolnici, je nemoremo cepiti. Pravice ima samo zdravnik."""
+def vax_pacient(id, cepivo):
+    """Funkcija doda nov vnos v tabelo cepljenje. To lahko naredi tudi za že cepljenje paciente."""
     # TODO
 
 
@@ -344,7 +344,7 @@ def remove_get():
 
 @route("/remove_pacient/<x>/")
 def remove_post(x):
-    """Odstrani uporabnika"""
+    """Odstrani pacienta"""
     id_uporabnika = get_user()
     if is_doctor(id_uporabnika):
         id = get_id_from(x)
