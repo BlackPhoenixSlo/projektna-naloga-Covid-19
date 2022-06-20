@@ -336,7 +336,7 @@ def pacient_certificate(x):
         return
 
 
-@route("/remove_pacient/")
+@route("/my_pacients/")
 def remove_get():
     """Serviraj formo za odstranitev pacienta"""
     id = get_user()
