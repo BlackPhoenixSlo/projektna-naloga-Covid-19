@@ -145,9 +145,14 @@ def remove_pacient(id):
     return cur.fetchall()
 
 
-def vax_pacient(id, cepivo):
+def vax_pacient(pacient_id, cepivo_id):
     """Funkcija doda nov vnos v tabelo cepljenje. To lahko naredi tudi za že cepljenje paciente."""
-    # TODO
+    today = datetime.today()
+    today = today.strftime("%d-%m-%Y")
+    cur.execute("INSERT INTO cepljenje VALUES (%s, %s, %s)",
+            [pacient_id, cepivo_id, today])
+    baza.commit()
+    
 
 
 def test_last_date(id):
@@ -353,6 +358,16 @@ def remove_post(x):
     else:
         # TODO naredi napako na vrhu htmlja
         return
+
+
+@route("/vax_pacient/<x>")
+def vax_page(x):
+    """Serviraj formo za cepljenje danega pacienta"""
+    id_uporabnika = get_user()
+    if is_doctor(id_uporabnika):
+        id = get_id_from(x)
+        return template("vax.html", get_my_profile(id), )
+
 
 
 ######################################################################

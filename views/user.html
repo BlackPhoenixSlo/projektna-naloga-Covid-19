@@ -5,7 +5,7 @@
        
           <!-- Latest compiled and minified CSS -->
 
-    %rebase('osnova.html', naslov='Uporabnik')
+    %rebase('base.html', naslov='Uporabnik')
 
 
     </head>
@@ -49,7 +49,7 @@
         
         %if is_doctor:
        
-            <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('remove_get')}}">Odstrani pacienta</a>
+            <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('remove_get')}}">Moji pacienti</a>
       
         %end
 

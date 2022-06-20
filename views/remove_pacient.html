@@ -4,7 +4,7 @@
   <head>
     
     
-    %rebase('osnova.html', naslov='Odstrani Pacienta')
+    %rebase('base.html', naslov='Odstrani Pacienta')
 
 
     <title>COVID portal - Odstrani pacienta</title>
@@ -19,7 +19,7 @@
                 <th scope="col">Ime </th>
                 <th scope="col">Priimek</th>
                 <th scope="col">Emso</th>
-                <th scope="col">Opcija</th>
+                <th scope="col">Akcije</th>
               </tr>
             </thead>
             <tbody>
@@ -29,7 +29,9 @@
                     <td>{{priimek}}</td>
                     <td>{{emso}}</td>
                     <td><a class="margin-gor-dol btn  btn-primary"  href="{{url('remove_post', x=emso)}}">Odstrani</a>
-                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x=emso)}}">Vpogled</a></td>
+                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x=emso)}}">Vpogled</a>
+                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x=emso)}}">Vpogled</a>
+                    </td>
 
                     </tr>
                     %end
