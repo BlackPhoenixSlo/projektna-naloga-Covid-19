@@ -136,3 +136,5 @@ uvoz/priimki_gl.csv
 uvoz/priimki_mr.csv
 uvoz/priimki_sž.csv
 uvoz/zenska_imena.csv
+
+static/user_qrcodes/

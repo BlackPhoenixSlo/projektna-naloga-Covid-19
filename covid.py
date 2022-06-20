@@ -20,6 +20,9 @@ import psycopg2.extras
 # se znebimo problemov s šumniki
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
+# uvozimo generator qr kod
+import qrcode
+
 ############################################################################################
 # Konfiguracija
 
@@ -188,6 +191,11 @@ def verify_user(ime, priimek, emso):
     return cur.fetchone()[0]
 
 
+def generate_qr(id):
+    img = qrcode.make(get_my_profile(id))
+    img.save('static/user_qrcodes/user_{0}.png'.format(id))
+
+
 ###############################################################
 # Funkcije, ki obdelajo zahteve odjemalcev
 
@@ -202,8 +210,15 @@ def static(filename):
 def main():
     """Glavna stran."""
     id = get_user()
-    return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id))
-
+    if (is_vaxed(id) or is_tested(id)):
+        qr_picture_path = '/static/user_qrcodes/user_{0}'.format(id)
+        if os.path.exists(qr_picture_path):
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id)
+        else:
+            generate_qr(id)
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id)
+    else:
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="user-blank")
 
 @route("/login/")
 def login_get():
