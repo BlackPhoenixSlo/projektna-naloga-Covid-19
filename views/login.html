@@ -12,16 +12,17 @@
       <h1 class="h3 mb-3 fw-normal">Prijava</h1>
   
       <div class="form-floating">
-        <input type="username" class="form-control" id="floatingInput" name=username placeholder="tadej">
-        <label for="floatingInput">Uporabnisko ime</label>
+        <input type="username" class="form-control" id="floatingInput" name=username placeholder="Uporabniško ime">
+        <label for="floatingInput">Uporabniško ime</label>
       </div>
       <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" name=password placeholder="tadej">
+        <input type="password" class="form-control" id="floatingPassword" name=password placeholder="Geslo">
         <label for="floatingPassword">Geslo</label>
       </div>
       <button class="w-100 btn btn btn-outline-primary" type="submit">Prijavi se</button>
     </form>
-    <a class="btn btn-primary btn btn-secondary btn-sm" href="{{url('register_get')}}" role="button">Registriraj se</a>
+    <a href="{{url('register_get')}}" class="link-secondary">Registracija</a>
+    
   </main>
   
   
