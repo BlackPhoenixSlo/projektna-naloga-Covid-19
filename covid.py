@@ -253,14 +253,18 @@ def register_get():
     return template("register.html",
                     napaka=None,
                     username=None,
-                    emso=None)
+                    emso=None,
+                    ime=None,
+                    priimek=None)
 
 
 @post("/register/")
 def register_post():
     """Registriraj novega uporabnika."""
-    username = request.forms.username
+    ime = request.forms.ime
+    priimek = request.forms.priimek
     emso = request.forms.emso
+    username = request.forms.username
     password1 = request.forms.password1
     password2 = request.forms.password2
     # Ali uporabnik že obstaja?
@@ -270,30 +274,42 @@ def register_post():
         return template("register.html",
                         username=username,
                         emso=emso,
+                        ime=ime,
+                        priimek=priimek,
                         napaka='To uporabniško ime je že zavzeto')
     elif not password1 == password2:
         # Gesli se ne ujemata
         return template("register.html",
                         username=username,
                         emso=emso,
+                        ime=ime,
+                        priimek=priimek,
                         napaka='Gesli se ne ujemata')
     else:
-        # Vse je v redu, vstavi novega uporabnika v bazo
-        password = password_hash(password1)
-        try:
-            id = get_id_from(emso)
-            cur.execute("INSERT INTO uporabnik (username, password, id_osebe) VALUES (%s, %s, %s)", [
-                        username, password, id])
-            baza.commit()
-        except TypeError:
-            print("Uporabnika ni v bazi registriranih oseb")
+        if verify_user(ime, priimek, emso):
+            password = password_hash(password1)
+            try:
+                id = get_id_from(emso)
+                cur.execute("INSERT INTO uporabnik (username, password, id_osebe) VALUES (%s, %s, %s)", [
+                            username, password, id])
+                baza.commit()
+            except TypeError:
+                return template("register.html",
+                                username=username,
+                                emso=emso,
+                                ime=ime,
+                                priimek=priimek,
+                                napaka='Dane emšo stevilke ni v bazi oseb. Prepričajte se na upravni enoti.')
+            # Daj uporabniku cookie
+            response.set_cookie('username', username, path='/', secret=secret)
+            redirect(url("login_get"))
+        else:
             return template("register.html",
-                            username=username,
-                            emso=emso,
-                            napaka='Dane emso stevilke ni v bazi oseb. Posvetujte se z zdravnikom.')
-        # Daj uporabniku cookie
-        response.set_cookie('username', username, path='/', secret=secret)
-        redirect(url("login_get"))
+                                username=username,
+                                emso=emso,
+                                ime=ime,
+                                priimek=priimek,
+                                napaka='Podatki med seboj se ne ujemajo. Prepričajte se na upravni enoti.')
 
 
 @route("/logout/")

@@ -1,42 +1,65 @@
 %rebase('base.html', naslov='Registracija')
-    <div class="container margin-gor-dol">
-        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-          <h2 class="form-signin-heading margin-gor-dol">Registracija</h2>
-          %if napaka:
-          <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
-          %end
-          <br>
-          <label for="Ime-input">Uporabniško ime:</label>
+<body class="text-center">
+<style>
+  .form-signin input[type="password"] {
+  margin-bottom: 0px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 
-          <input type="username" class="margin-gor-dol form-control" placeholder="JanezPreseren"
-                 %if username:
-                 value="{{username}}"
-                 %end
-                 name="username"
-                 required autofocus>
-
-          <br>
-          <label for="Ime-input">Emso:</label>
-
-          <input type="username" class="margin-gor-dol form-control" placeholder="2811999500019"
-                 %if emso:
-                 value="{{emso}}"
-                 %end
-                 name="emso"
-                 required>
-                 <br>
-                 <label for="Ime-input">Geslo:</label>
-
-          <input type="password" class="margin-gor-dol form-control" placeholder="ASas!@12" name="password1" required>
-          <br>
-          <label for="Ime-input">Potrdi geslo:</label>
-
-          <input type="password" class="margin-gor-dol form-control" placeholder="ASas!@12" name="password2" required>
-          <br>
-
-          <button class="margin-gor-dol btn btn-lg btn-primary btn-block margin-gor-dol" type="submit">Registriraj se</button>
+</style>
+<main class="form-signin w-100 m-auto">
+      %if napaka:
+      <div class="alert alert-danger" role="alert">
+        {{napaka}}
+      </div>
+      %end 
+      <form method="post" action=".">
+        <img class="mb-4" src="\static\android-chrome-192x192.png" alt="" width="192" height="192">
+        <h1 class="h3 mb-3 fw-normal">Registracija</h1>
+          <div class="form-floating">
+            <input type="username" class="form-control" id="floatingIme" name=ime placeholder="Ime"
+            %if ime:
+            value="{{ime}}"
+            %end
+            required>
+            <label for="floatingIme">Ime</label>
+          </div>
+          <div class="form-floating">
+            <input type="username" class="form-control" id="floatingPriimek" name=priimek placeholder="Priimek"
+            %if priimek:
+            value="{{priimek}}"
+            %end
+            required>
+            <label for="floatingPriimek">Priimek</label>
+          </div>          
+          <div class="form-floating">
+            <input type="username" class="form-control" id="floatingEmso" name=emso placeholder="Emšo"
+            %if emso:
+            value="{{emso}}"
+            %end
+            required>
+            <label for="floatingEmso">Emšo</label>
+          </div>
+          <div class="form-floating">
+            <input type="username" class="form-control" id="floatingUsername" name=username placeholder="Uporabniško ime"
+            %if username:
+            value="{{username}}"
+            %end
+            required>
+            <label for="floatingUsername">Uporabniško ime</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" class="form-control" id="floatingpass1" name=password1 placeholder="Geslo" required>
+            <label for="floatingpass1">Geslo</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" class="form-control" id="floatingpass2" name=password2 placeholder="Geslo" required>
+            <label for="floatingpass2">Potrdi geslo</label>
+          </div>
+          <button class="w-100 btn btn btn-outline-primary" type="submit">Registriraj se</button>
         </form>
-        <br>
-
-        <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="{{url('main')}}" >Domov</a>
+        <a href="{{url('login_get')}}" class="link-secondary">Nazaj</a>
     </div> 
+</main>
+</body>
