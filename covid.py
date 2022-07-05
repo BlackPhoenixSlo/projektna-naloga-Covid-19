@@ -192,8 +192,18 @@ def verify_user(ime, priimek, emso):
 
 
 def generate_qr(id):
-    img = qrcode.make(get_my_profile(id))
-    img.save('static/user_qrcodes/user_{0}.png'.format(id))
+    """Funkcija ne vrača ničesar, zgenerira pa qr kodo specifično glede na uporabnika"""
+    profile = get_my_profile(id)
+    if is_vaxed(id):
+        qr_pct = "{ime} {priimek} \n{stalno_prebivalisce} \n{cepivo}".format(ime=profile[0], priimek=profile[1], stalno_prebivalisce=profile[3], cepivo=vax_id(id))
+        img = qrcode.make(qr_pct)
+        img.save('static/user_qrcodes/user_{0}.png'.format(id))
+    else:
+        # TODO treba je pogledat da je bil vsaj negativen
+        qr_pct = "{ime} {priimek} \n {stalno_prebivalisce} \n {datum}".format(ime=profile[0], priimek=profile[1], stalno_prebivalisce=profile[3], datum=test_last_date(id)) 
+
+        img = qrcode.make(qr_pct)
+        img.save('static/user_qrcodes/user_{0}.png'.format(id))
 
 
 ###############################################################
@@ -211,12 +221,12 @@ def main():
     """Glavna stran."""
     id = get_user()
     if (is_vaxed(id) or is_tested(id)):
-        qr_picture_path = '/static/user_qrcodes/user_{0}'.format(id)
-        if os.path.exists(qr_picture_path):
-            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id)
+        qr_picture_path = 'static/user_qrcodes/user_{0}.png'.format(id)
+        if os.path.isfile(qr_picture_path):
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id))
         else:
             generate_qr(id)
-            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id)
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id))
     else:
         return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="user-blank")
 
@@ -300,6 +310,7 @@ def register_post():
                                 ime=ime,
                                 priimek=priimek,
                                 napaka='Dane emšo stevilke ni v bazi oseb. Prepričajte se na upravni enoti.')
+            # TODO mislim da je treba to vrstico prestavit
             # Daj uporabniku cookie
             response.set_cookie('username', username, path='/', secret=secret)
             redirect(url("login_get"))
@@ -342,16 +353,6 @@ def add_pacient_post():
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Podatki pacienta se ne ujemajo")
 
 
-@route('/pct_certificate/')
-def pct_certificate():
-    """Serviraj formo za PCT potrdilo"""
-    id = get_user()
-    if is_vaxed(id) or is_tested(id):
-        return template("pct_certificate.html", get_my_profile(id), datum_testiranja=test_last_date(id), rezultat_test=test_result(id), cepivo=vax_id(id))
-    else:
-        # TODO naredi napako na vrhu htmlja
-        return
-
 
 @route('/pct_certificate/<x>')
 def pacient_certificate(x):
@@ -367,7 +368,7 @@ def pacient_certificate(x):
 
 @route("/my_pacients/")
 def remove_get():
-    """Serviraj formo za odstranitev pacienta"""
+    """Serviraj formo za akcijo pri svojih pacientih"""
     id = get_user()
     if is_doctor(id):
         return template('remove_pacient.html', pacienti=remove_pacient(id))
@@ -397,6 +398,12 @@ def vax_page(x):
         id = get_id_from(x)
         return template("vax.html", get_my_profile(id), )
 
+# TODO 
+@post("/vax_pacient/<x>")
+def vaxing(x):
+    # TODO Funkcija ki v bazo vstavi novega uporabnika ki ni cepljen, na koncu naredi redirekt na njegovo pct stran, da se vidi da je cepljen
+    # TODO preveri, da je uporabnik res zdravnik in da je cepljen v njegovi bolnici - še ne cepljen
+    return 
 
 
 ######################################################################
