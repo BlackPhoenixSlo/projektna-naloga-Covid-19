@@ -11,8 +11,7 @@
         <li><a href="{{url('add_pacient_get')}}" class="nav-link px-2 link-dark">Dodaj pacienta</a></li>
         <li><a href="{{url('remove_get')}}" class="nav-link px-2 link-dark">Moji pacienti</a></li>
         %end
-        <li><a href="{{url('pct_certificate')}}" class="nav-link px-2 link-dark">PCT potrdilo</a></li>
-        <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">O nas</a></li>
       </ul>
 
       <div class="col-md-3 text-end">
@@ -26,72 +25,24 @@
         %if ime:
         <h5 class="card-title">{{ime}} {{priimek}}</h5>
         %end
+        <p class="card-text">{{stalno_prebivalisce}}</p>
       </div>
       <ul class="list-group list-group-flush">
         %if emso:
         <li class="list-group-item">{{emso}}</li>
         %end
-        <li class="list-group-item">Dapibus ac facilisis in</li>
-        <li class="list-group-item">Vestibulum at eros</li>
+
+        %if is_vaxed:
+        <li class="list-group-item">{{vax_id}}</li>
+        %end
+        %if is_doctor:
+        <li class="list-group-item">{{hospital_name}}</li>
+        %end
       </ul>
-      <div class="card-body">
-        <a href="#" class="card-link">Card link</a>
-        <a href="#" class="card-link">Another link</a>
-      </div>
     </div>
-</div>
-
-
-<!-- 
-    <div class="container">
-
-        
-        <h2>Pozdravljen!</h2>
-
-        <ul class="list-group">
-            %if ime:
-            <h5>Ime:</h5><li class="list-group-item">{{ime}}</li>
-            %end
-            %if priimek:
-            <h5>Priimek: </h5><li class="list-group-item">{{priimek}}</li>
-            %end
-            %if emso:
-            <h5>Emso: </h5><li class="list-group-item">{{emso}}</li>
-            %end
-            %if stalno_prebivalisce:
-            <h5>Prebivališče: </h5><li class="list-group-item">{{stalno_prebivalisce}}</li>
-            %end
-            %if is_doctor:
-            <h5>Bolnisnica: </h5><li class="list-group-item">{{hospital_name}}</li>
-            %end
-          </ul>
-
-
-   
-        
-       
-        
-        
-           
-      
-        %if is_doctor:
-      
-            <a class="margin-gor-dol btn btn-lg btn-primary"  href="{{url('add_pacient_get')}}">Dodaj pacienta</a>
-        
-        %end
-        
-        %if is_doctor:
-       
-            <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('remove_get')}}">Moji pacienti</a>
-      
-        %end
-
-        %if is_vaxed or is_tested:
-       
-            <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('pct_certificate')}}">PCT potrdilo</a>
-     
-        %end
-
-        <a class="margin-gor-dol btn btn-lg btn-primary" href="{{url('logout')}}" >Odjava</a>
-    
-    </div> -->
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+      <div class="col-md-4 d-flex align-items-center">
+        <span class="mb-3 mb-md-0 text-muted">&copy;COVID-19 Portal</span>
+      </div>
+    </footer>
+  </div>
