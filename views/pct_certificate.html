@@ -1,34 +1,23 @@
-%rebase('base.html', naslov='Certifikat')
-    <div class="container">
-        <h2>Pozdravljen!</h2>
-
-        <ul class="list-group">
-            %if ime:
-            <h5>Ime:</h5><li class="list-group-item">{{ime}}</li>
-            %end
-            %if priimek:
-            <h5>Priimek: </h5><li class="list-group-item">{{priimek}}</li>
-            %end
-            %if stalno_prebivalisce:
-            <h5>Prebivališče: </h5><li class="list-group-item">{{stalno_prebivalisce}}</li>
-            %end
-            %if datum_testiranja:
-            <h5>Datum zadnjega testiranja: </h5><li class="list-group-item">{{datum_testiranja}}</li>
-            %end
-            %if datum_testiranja:
-            <h5>Rezultat zadnjega testa: </h5><li class="list-group-item">{{rezultat_test}}</li>
-            %end
-            %if cepivo:
-            <h5>Cepivo: </h5><li class="list-group-item">{{cepivo}}</li>
-            %end
+%rebase('base.html', naslov='PCT potrdilo')
+    <div class="card text-center" style="width: 18rem;">
+        <img src="/static/user_qrcodes/user_{{id}}.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          %if ime:
+          <h5 class="card-title">{{ime}} {{priimek}}</h5>
+          %end
+          <p class="card-text">{{stalno_prebivalisce}}</p>
+        </div>
+        <ul class="list-group list-group-flush">
+          %if emso:
+          <li class="list-group-item">{{emso}}</li>
+          %end
+          %if cepivo:
+          <li class="list-group-item">{{cepivo}}</li>
+          %end
+          %if datum_testiranja:
+          <li class="list-group-item">{{datum_testiranja}}</li>
+          <li class="list-group-item">{{rezultat_test}}</li>
+          %end
         </ul>
-
-
-   
-        
-       
-        
-    
-            <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="{{url('main')}}" >Domov</a>
-        
-    </div>
+        <a href="{{url('remove_get')}}" class="btn btn-primary">Nazaj</a>
+      </div>

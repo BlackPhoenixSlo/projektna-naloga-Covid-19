@@ -199,7 +199,7 @@ def generate_qr(id):
         img = qrcode.make(qr_pct)
         img.save('static/user_qrcodes/user_{0}.png'.format(id))
     else:
-        # TODO treba je pogledat da je bil vsaj negativen
+        # TODO treba je pogledat da je bil vsaj negativen - mogoče nit trenutno ni tako pomembno
         qr_pct = "{ime} {priimek} \n {stalno_prebivalisce} \n {datum}".format(ime=profile[0], priimek=profile[1], stalno_prebivalisce=profile[3], datum=test_last_date(id)) 
 
         img = qrcode.make(qr_pct)
@@ -223,12 +223,12 @@ def main():
     if (is_vaxed(id) or is_tested(id)):
         qr_picture_path = 'static/user_qrcodes/user_{0}.png'.format(id)
         if os.path.isfile(qr_picture_path):
-            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id))
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id), napaka=None)
         else:
             generate_qr(id)
-            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id))
+            return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id), napaka=None)
     else:
-        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="user-blank")
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="user-blank", napaka=None)
 
 @route("/login/")
 def login_get():
@@ -310,7 +310,6 @@ def register_post():
                                 ime=ime,
                                 priimek=priimek,
                                 napaka='Dane emšo stevilke ni v bazi oseb. Prepričajte se na upravni enoti.')
-            # TODO mislim da je treba to vrstico prestavit
             # Daj uporabniku cookie
             response.set_cookie('username', username, path='/', secret=secret)
             redirect(url("login_get"))
@@ -360,10 +359,15 @@ def pacient_certificate(x):
     id = get_user()
     id_pacienta = get_id_from(x)
     if is_doctor(id):
-        return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta))
+        qr_picture_path = 'static/user_qrcodes/user_{0}.png'.format(id_pacienta)
+        if os.path.isfile(qr_picture_path):
+            return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta), id=id_pacienta)
+        else:
+            generate_qr(id_pacienta)
+            return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta), id=id_pacienta)
     else:
-        # TODO naredi napako na vrhu htmlja
-        return
+        # TODO preusmeri na main z napako
+        redirect(url("main"))
 
 
 @route("/my_pacients/")
