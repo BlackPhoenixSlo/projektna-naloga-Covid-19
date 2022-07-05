@@ -4,7 +4,6 @@
       <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
         <svg class="bi me-2" width="32" height="32" role="img" aria-label="Bootstrap"><image href="/static/favicon-32x32.png"/></svg>
       </a>
-
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
         <li><a href="{{url('main')}}" class="nav-link px-2 link-secondary">Moj profil</a></li>
         %if is_doctor:
@@ -18,7 +17,11 @@
         <a href="{{url('logout')}}" class="btn btn-primary">Odjava</a>
       </div>
     </header>
-
+    %if napaka:
+    <div class="alert alert-danger" role="alert">
+      {{napaka}}
+    </div>
+    %end
     <div class="card text-center" style="width: 18rem;">
       <img src="/static/user_qrcodes/user_{{id}}.png" class="card-img-top" alt="...">
       <div class="card-body">
