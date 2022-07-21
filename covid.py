@@ -228,7 +228,7 @@ def main():
             generate_qr(id)
             return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id), napaka=None)
     else:
-        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="user-blank", napaka=None)
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="blank", napaka=None)
 
 @route("/login/")
 def login_get():
@@ -366,8 +366,12 @@ def pacient_certificate(x):
             generate_qr(id_pacienta)
             return template("pct_certificate.html", get_my_profile(id_pacienta),  datum_testiranja=test_last_date(id_pacienta), rezultat_test=test_result(id_pacienta), cepivo=vax_id(id_pacienta), id=id_pacienta)
     else:
-        # TODO preusmeri na main z napako
-        redirect(url("main"))
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id), napaka="Nimate pravic za ogled certifikata")
+
+
+@route('/pct_certificate/')
+def reroute_to():
+    redirect(url("remove_get"))       
 
 
 @route("/my_pacients/")
@@ -377,8 +381,7 @@ def remove_get():
     if is_doctor(id):
         return template('remove_pacient.html', pacienti=remove_pacient(id))
     else:
-        # TODO naredi napako na vrhu htmlja
-        return
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="blank", napaka="Nimate pravic za dostop do te strani.")
 
 
 @route("/remove_pacient/<x>/")
