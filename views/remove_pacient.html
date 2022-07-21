@@ -1,47 +1,76 @@
-%rebase('base.html', naslov='Odstrani Pacienta')
-<!--     <div class="container">
-        <h2>Tabela pacientov</h2>
-        <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-        <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Ime </th>
-                <th scope="col">Priimek</th>
-                <th scope="col">Emso</th>
-                <th scope="col">Akcije</th>
-              </tr>
-            </thead>
-            <tbody>
-                %for (ime,priimek,emso) in pacienti:
-                    <tr>
-                    <td>{{ime}}</td>
-                    <td>{{priimek}}</td>
-                    <td>{{emso}}</td>
-                    <td><a class="margin-gor-dol btn  btn-primary"  href="{{url('remove_post', x=emso)}}">Odstrani</a>
-                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x=emso)}}">Vpogled</a>
-                        <a class="margin-gor-dol btn btn-primary " href="{{url('pacient_certificate', x=emso)}}">Vpogled</a>
-                    </td>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="/static/list-groups.css" rel="stylesheet">
 
-                    </tr>
-                    %end
-              
-                
-              
-            </tbody>
-          </table>
-        </form>
-      </div> 
 
- -->
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
 
-      <div class="list-group">
-        %for (ime, priimek, emso) in pacienti:
-        <a class="list-group-item list-group-item-action flex-column align-items-start" href="{{url('pacient_certificate', x=emso)}}">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-2">{{ime}} {{priimek}}</h5>
-            <small>3 days ago</small>
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+
+    <title>Moji pacienti</title>
+
+    <div class="list-group w-auto">
+      %for (ime, priimek, emso) in pacienti:
+      <a href="{{url('pacient_certificate', x=emso)}}" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+        <img src="/static/user_qrcodes/user_blank.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+        <div class="d-flex gap-2 w-100 justify-content-between">
+          <div>
+            <h6 class="mb-0">{{ime}} {{priimek}}</h6>
+            <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
           </div>
-         
-          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          <small>Donec id elit non mi porta.</small>
-        </a>
+          <small class="opacity-50 text-nowrap">now</small>
+        </div>
