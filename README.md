@@ -15,10 +15,15 @@ uporabniško ime: `admin`
 
 geslo: `admin`
 
-### pacient
+### cepljen pacient
 uporabniško ime: `tadej`
 
 geslo: `tadej`
+
+### pacient brez pctja
+uporabniško ime: `neja`
+
+geslo: `neja`
 
 
 ### Opombe
