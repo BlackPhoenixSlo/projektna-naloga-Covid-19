@@ -371,6 +371,7 @@ def pacient_certificate(x):
 
 @route('/pct_certificate/')
 def reroute_to():
+    """Preusmerjamo uporabnika na glavno stran, če v urlju ni podatkov za koncno osebo"""
     redirect(url("remove_get"))       
 
 
@@ -379,7 +380,16 @@ def remove_get():
     """Serviraj formo za akcijo pri svojih pacientih"""
     id = get_user()
     if is_doctor(id):
-        return template('remove_pacient.html', pacienti=remove_pacient(id))
+        pacienti = remove_pacient(id)
+        for i in range(len(pacienti)):
+            (ime, priimek, emso) = pacienti[i]
+            id_pacienta = get_id_from(emso)
+            if is_vaxed(id_pacienta):
+                pacienti[i] = [ime, priimek, emso, False]
+            else:
+                pacienti[i] = [ime, priimek, emso, True]
+        #return template('remove_pacient.html', pacienti=pacienti)
+        return template("my_pacients.html", pacienti=pacienti)
     else:
         return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id="blank", napaka="Nimate pravic za dostop do te strani.")
 
@@ -405,12 +415,29 @@ def vax_page(x):
         id = get_id_from(x)
         return template("vax.html", get_my_profile(id), )
 
-# TODO 
+# TODO a res rabim post? bi lahko naredil kar z routo na link brez posta?
 @post("/vax_pacient/<x>")
 def vaxing(x):
     # TODO Funkcija ki v bazo vstavi novega uporabnika ki ni cepljen, na koncu naredi redirekt na njegovo pct stran, da se vidi da je cepljen
     # TODO preveri, da je uporabnik res zdravnik in da je cepljen v njegovi bolnici - še ne cepljen
-    return 
+    id_pacienta = get_id_from(x)
+    id_zdravnika = get_user()
+    if (not is_vaxed(id_pacienta) and hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
+        # TODO cepi pacienta
+        # TODO redirect na novo pct potrdilo tega pacienta
+        return
+    elif is_vaxed(id_pacienta):
+        # TODO vrni napako, da je uporabnik že cepljen
+        return
+    elif not is_doctor(id_zdravnika):
+        # TODO vrni napako, da glavni uporabnik ni zdravnik
+        # TODO redirect
+        return
+    else:
+        # TODO vrni napako, da nista v isti bolnici
+        # TODO redirect
+        return
+
 
 
 ######################################################################
