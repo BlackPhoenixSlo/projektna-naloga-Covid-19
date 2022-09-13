@@ -1,27 +1,46 @@
 %rebase('base.html', naslov='Pacienti')
-<div class="container">
-    <h2>Dodaj pacienta</h2>
-
-    <form class="form-signin margin-gor-dol" role="form" method="post" action=".">
-      %if napaka:
-      <div class=" alert alert-warning margin-gor-dol">{{napaka}}</div>
-      %end
-        <div class="form-group">
-          <label for="Ime-input">Ime</label>
-          <input type="text" class="form-control" name="ime"  placeholder="Ime">
-          <small id="" class="form-text text-muted">Napiši pacientovo ime.</small>
+    <div class="container">
+      <main>
+        <div class="py-5 text-center">
+          <img class="d-block mx-auto mb-4" src="/static/android-chrome-192x192.png" alt="" width="192" height="192">
+          <h2>Registracija</h2>
+          <p class="lead">Spodaj pripravljena forma vam, kjer lahko kot prijavljen zdravnik dodate nove paciente v svojo bolnišnico. Podatki morajo biti veljavni iz baze prebivalstva.</p>
         </div>
-        <div class="form-group">
-            <label for="exampleInputEmail1">Priimek</label>
-            <input type="text" class="form-control" name="priimek"  placeholder="Priimek">
-            <small id="" class="form-text text-muted">Napiši pacientov priimek.</small>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Emšo</label>
-            <input type="text" class="form-control" name="emso"  placeholder="Emšo">
-            <small id="" class="form-text text-muted">Napiši pacientovo emšo.</small>
-          </div>
-
+    
+        %if napaka:
+        <div class="alert alert-danger" role="alert">
+          {{napaka}}
+        </div>
+        %end
+    
+        <form method="post" action=".">
+          <div class="col-md-3 col-lg-8">
+            <h4 class="mb-3">Splošni podatki</h4>
+            <form class="needs-validation" novalidate>
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="firstName" class="form-label">Ime</label>
+                  <input type="text" class="form-control" id="ime" name="ime" value="" required>
+                  <div class="invalid-feedback">
+                    Potrebno je izbrati veljavno ime.
+                  </div>
+                </div>
+    
+                <div class="col-sm-6">
+                  <label for="lastName" class="form-label">Priimek</label>
+                  <input type="text" class="form-control" id="priimek" name="priimek" value="" required>
+                  <div class="invalid-feedback">
+                    Potrebno je izbrati veljavni priimek.
+                  </div>
+                </div>
+    
+                <div class="col-sm-12">
+                  <label for="emso" class="form-label">Emšo</label>
+                  <input type="text" class="form-control" id="emso" name="emso" value="" required>
+                  <div class="invalid-feedback">
+                    Potrebno je izbrati veljavno emšo številko.
+                  </div>
+                </div>
         
       
         <button type="submit" class="margin-gor-dol btn btn-lg btn-primary btn-block" >Dodaj</button>
@@ -29,20 +48,3 @@
             <a class="margin-gor-dol btn btn-lg btn-primary btn-block" href="{{url('main')}}">Domov</a>
       
       </form>
-      <form>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-        </div>
-        <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-</div>
