@@ -1,2 +1,63 @@
-%rebase('base.html', naslov='Çepljenje')
+%rebase('base.html', naslov='Cepljenje')
 
+    <div class="container">
+      <main>
+        <div class="py-5 text-center">
+          <img class="d-block mx-auto mb-4" src="/static/android-chrome-192x192.png" alt="" width="192" height="192">
+          <h2>Cepljenje</h2>
+          <p class="lead">Spodaj pripravljena forma vam kot zdravniku omogoča beleženje cepljenja pacientov, ki še niso bili cepljeni</p>
+        </div>
+    
+        %if napaka:
+        <div class="alert alert-danger" role="alert">
+          {{napaka}}
+        </div>
+        %end
+
+        <form method="post" action=".">
+          <div class="col-md-3 col-lg-8">
+            <h4 class="mb-3">Splošni podatki</h4>
+            <form class="needs-validation" novalidate>
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="firstName" class="form-label">Ime</label>
+                  <input type="text" class="form-control" id="ime" name="ime" value="{{ime}}" required>
+                  <div class="invalid-feedback">
+                    Potrebno je izbrati veljavno ime.
+                  </div>
+                </div>
+    
+                <div class="col-sm-6">
+                  <label for="lastName" class="form-label">Priimek</label>
+                  <input type="text" class="form-control" id="priimek" name="priimek" value="{{priimek}}" required>
+                  <div class="invalid-feedback">
+                    Potrebno je izbrati veljavni priimek.
+                  </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <label for="emso" class="form-label">Emšo</label>
+                    <input type="text" class="form-control" id="emso" name="emso" value="{{emso}}" required>
+                    <div class="invalid-feedback">
+                      Potrebno je izbrati veljavno emšo številko.
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Izberi cepivo
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    %for cepivo in cepiva:
+                    <a class="dropdown-item" href="{{url('vax_post', x=emso, cepivo=cepivo)}}">{{cepivo}}</a>
+                    %end
+                  </div>
+                </div>
+                
+                <a href="{{url('main')}}" class="btn btn-primary my-2">Moj profil</a>
+                
+        </form>
+
+
+</div>
+          
