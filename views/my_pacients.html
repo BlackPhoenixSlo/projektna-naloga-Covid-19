@@ -102,9 +102,9 @@
               <p class="card-text">{{emso}}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                    <a href="#" class="btn btn-outline-secondary">Odstrani pacienta</a>
+                    <a href="{{url('remove_post', x=emso)}}" class="btn btn-outline-secondary">Odstrani pacienta</a>
                     %if pct:
-                    <a href="#" class="btn btn-outline-primary">Cepi pacienta</a>
+                    <a href="{{url('vax_get', x=emso)}}" class="btn btn-outline-primary">Cepi pacienta</a>
                     %end
                 </div>
                 <small class="text-muted">9 mins</small>
@@ -123,6 +123,5 @@
       <a href="#">Back to top</a>
     </p>
     <p class="mb-1">&copy; COVID-19 Portal</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
   </div>
 </footer>
