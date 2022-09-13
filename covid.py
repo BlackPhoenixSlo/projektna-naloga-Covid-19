@@ -110,11 +110,15 @@ def is_tested(id):
 
 def add_to_hospital(pacient_id, hospital_id):
     """Funkcija v bazo vstavlja novega pacienta za sprejem v bolnišnico."""
-    cur.execute("INSERT INTO pacient VALUES (%s, %s)",
-                [pacient_id, hospital_id])
-    baza.commit()
-
-
+    try:
+        cur.execute("INSERT INTO pacient VALUES (%s, %s)",
+                    [pacient_id, hospital_id])
+        baza.commit()
+    except:
+        baza.rollback()
+        raise Exception("Dan pacient je že v bolnišnici")
+        
+    
 def vax_id(id):
     """Funkcija vrne ime cepiva, če ji podamo id cepljene osebe"""
     if is_vaxed(id):
@@ -152,10 +156,12 @@ def vax_pacient(pacient_id, cepivo_id):
     """Funkcija doda nov vnos v tabelo cepljenje. To lahko naredi tudi za že cepljenje paciente."""
     today = datetime.today()
     today = today.strftime("%d-%m-%Y")
-    cur.execute("INSERT INTO cepljenje VALUES (%s, %s, %s)",
-            [pacient_id, cepivo_id, today])
-    baza.commit()
-    
+    try:
+        cur.execute("INSERT INTO cepljenje VALUES (%s, %s, %s)",
+                [pacient_id, cepivo_id, today])
+        baza.commit()
+    except:
+        baza.rollback()
 
 
 def test_last_date(id):
@@ -189,6 +195,25 @@ def verify_user(ime, priimek, emso):
     cur.execute(
         "SELECT exists (SELECT * FROM oseba WHERE ime=%s AND priimek=%s AND emso=%s)", [ime, priimek, emso])
     return cur.fetchone()[0]
+
+
+def list_of_vax():
+    """Funkcija vrne seznam vseh imen cepiv"""
+    cur.execute(
+        "SELECT ime_cepiva FROM cepivo"
+    )
+    cepiva = cur.fetchall()
+    # Funkcija mi vraca seznam seznamov -> naredim flat list
+    cepiva = [cepivo[0] for cepivo in cepiva]
+    return cepiva
+
+
+def index_of_vax(vax_name : str) -> int:
+    cur.execute(
+        "SELECT id_cepiva FROM cepivo where ime_cepiva=%s", [vax_name]
+    )
+    return cur.fetchone()[0]
+    
 
 
 def generate_qr(id):
@@ -341,14 +366,19 @@ def add_pacient_get():
 @post("/add_pacient/")
 def add_pacient_post():
     """Dodajanje novega pacienta"""
+    # TODO backend deluje, treba je poravnati formo na strani, pa še ne znam kako 
     ime = request.forms.ime
     priimek = request.forms.priimek
     emso = request.forms.emso
     doctor_id = get_user()
     if verify_user(ime, priimek, emso):
-        add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
-        redirect(url("remove_get"))
-    else:
+        try:
+            add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
+        except:
+            return template("user.html", get_my_profile(doctor_id), is_doctor=is_doctor(doctor_id), is_vaxed=is_vaxed(doctor_id), is_tested=is_tested(doctor_id), hospital_name=hospital_name(doctor_id), id=doctor_id, vax_id = vax_id(doctor_id), napaka="Pacient je že v bolnišnici.")
+        else:
+            redirect(url("remove_get"))
+    else: 
         return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Podatki pacienta se ne ujemajo")
 
 
@@ -370,7 +400,7 @@ def pacient_certificate(x):
 
 
 @route('/pct_certificate/')
-def reroute_to():
+def pct_redirect():
     """Preusmerjamo uporabnika na glavno stran, če v urlju ni podatkov za koncno osebo"""
     redirect(url("remove_get"))       
 
@@ -400,45 +430,48 @@ def remove_post(x):
     id_uporabnika = get_user()
     if is_doctor(id_uporabnika):
         id = get_id_from(x)
-        delete_pacient(id)
-        redirect(url("remove_get"))
+        try:
+            delete_pacient(id)
+        except:
+            redirect(url('remove_get'))
+        else:
+            redirect(url("remove_get"))
     else:
         # TODO naredi napako na vrhu htmlja
         return
 
 
 @route("/vax_pacient/<x>")
-def vax_page(x):
+def vax_get(x):
     """Serviraj formo za cepljenje danega pacienta"""
     id_uporabnika = get_user()
-    if is_doctor(id_uporabnika):
-        id = get_id_from(x)
-        return template("vax.html", get_my_profile(id), )
-
-# TODO a res rabim post? bi lahko naredil kar z routo na link brez posta?
-@post("/vax_pacient/<x>")
-def vaxing(x):
-    # TODO Funkcija ki v bazo vstavi novega uporabnika ki ni cepljen, na koncu naredi redirekt na njegovo pct stran, da se vidi da je cepljen
-    # TODO preveri, da je uporabnik res zdravnik in da je cepljen v njegovi bolnici - še ne cepljen
     id_pacienta = get_id_from(x)
+    ime, priimek, emso  = get_my_profile(id_pacienta)[0], get_my_profile(id_pacienta)[1], get_my_profile(id_pacienta)[2]
+    cepiva = list_of_vax()
+    if is_doctor(id_uporabnika):
+        return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka=None)
+
+
+
+@route("/vax_pacient/<x>/<cepivo>")
+def vax_post(x, cepivo):
+    id_pacienta = get_id_from(x)
+    print(id_pacienta)
     id_zdravnika = get_user()
-    if (not is_vaxed(id_pacienta) and hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
-        # TODO cepi pacienta
-        # TODO redirect na novo pct potrdilo tega pacienta
-        return
-    elif is_vaxed(id_pacienta):
-        # TODO vrni napako, da je uporabnik že cepljen
-        return
+    print(id_zdravnika)
+    ime = request.forms.ime
+    priimek = request.forms.priimek
+    emso = request.forms.emso
+    id_cepiva = index_of_vax(cepivo)
+    print(ime, priimek, emso)
+    if (hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
+        # Pacienta lahko cepimo tudi če je že cepljen
+        vax_pacient(id_pacienta, id_cepiva)
+        redirect(url("pacient_certificate", x=emso))
     elif not is_doctor(id_zdravnika):
-        # TODO vrni napako, da glavni uporabnik ni zdravnik
-        # TODO redirect
-        return
+       return
     else:
-        # TODO vrni napako, da nista v isti bolnici
-        # TODO redirect
         return
-
-
 
 ######################################################################
 # Glavni program
