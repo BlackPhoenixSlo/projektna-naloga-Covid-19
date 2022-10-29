@@ -130,11 +130,16 @@ def vax_id(id):
 
 
 def hospital_id(id):
-    """Funkcija vrača id bolnisnice v kateri dela trenutni uporabnik"""
-    cur.execute(
-        "SELECT id_bolnisnice FROM zdravstveni_delavec WHERE id_osebe = %s", [id])
-    return cur.fetchone()[0]
-
+    """Funkcija vrača id bolnisnice v kateri je oseba s tem id-jem"""
+    if is_doctor(id):
+        cur.execute(
+            "SELECT id_bolnisnice FROM zdravstveni_delavec WHERE id_osebe = %s", [id])
+        return cur.fetchone()[0]
+    else:    
+        cur.execute(
+            "SELECT id_bolnisnice FROM pacient WHERE id_osebe = %s", [id])
+        return cur.fetchone()[0]
+       
 
 def hospital_name(id):
     """Funkcija vrača ime bolnisnice v kateri je uporabnik z idjem"""
@@ -154,14 +159,16 @@ def remove_pacient(id):
 
 def vax_pacient(pacient_id, cepivo_id):
     """Funkcija doda nov vnos v tabelo cepljenje. To lahko naredi tudi za že cepljenje paciente."""
+    print(pacient_id, cepivo_id)
     today = datetime.today()
     today = today.strftime("%d-%m-%Y")
     try:
-        cur.execute("INSERT INTO cepljenje VALUES (%s, %s, %s)",
+        cur.execute("INSERT INTO cepljenje (id_osebe, id_cepiva, datum_cepljenja) VALUES (%s, %s, %s)",
                 [pacient_id, cepivo_id, today])
         baza.commit()
+        print("Pridem do sem")
     except:
-        baza.rollback()
+        baza.rollback() 
 
 
 def test_last_date(id):
@@ -321,7 +328,15 @@ def register_post():
                         priimek=priimek,
                         napaka='Gesli se ne ujemata')
     else:
-        if verify_user(ime, priimek, emso):
+        cur.execute("SELECT 1 FROM uporabnik WHERE id_osebe=%s", [get_id_from(emso)])
+        if cur.fetchone():
+            return template("register.html",
+                username=username,
+                emso=emso,
+                ime=ime,
+                priimek=priimek,
+                napaka='Ta oseba je že registrirana v portal')
+        elif verify_user(ime, priimek, emso):
             password = password_hash(password1)
             try:
                 id = get_id_from(emso)
@@ -366,7 +381,6 @@ def add_pacient_get():
 @post("/add_pacient/")
 def add_pacient_post():
     """Dodajanje novega pacienta"""
-    # TODO backend deluje, treba je poravnati formo na strani, pa še ne znam kako 
     ime = request.forms.ime
     priimek = request.forms.priimek
     emso = request.forms.emso
@@ -375,7 +389,7 @@ def add_pacient_post():
         try:
             add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
         except:
-            return template("user.html", get_my_profile(doctor_id), is_doctor=is_doctor(doctor_id), is_vaxed=is_vaxed(doctor_id), is_tested=is_tested(doctor_id), hospital_name=hospital_name(doctor_id), id=doctor_id, vax_id = vax_id(doctor_id), napaka="Pacient je že v bolnišnici.")
+            return template("add_pacient.html", ime=ime, priimek=priimek, emso=emso, napaka="Pacient je že v bolnišnici")
         else:
             redirect(url("remove_get"))
     else: 
@@ -456,22 +470,18 @@ def vax_get(x):
 @route("/vax_pacient/<x>/<cepivo>")
 def vax_post(x, cepivo):
     id_pacienta = get_id_from(x)
-    print(id_pacienta)
     id_zdravnika = get_user()
-    print(id_zdravnika)
-    ime = request.forms.ime
-    priimek = request.forms.priimek
-    emso = request.forms.emso
     id_cepiva = index_of_vax(cepivo)
-    print(ime, priimek, emso)
     if (hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
         # Pacienta lahko cepimo tudi če je že cepljen
         vax_pacient(id_pacienta, id_cepiva)
-        redirect(url("pacient_certificate", x=emso))
-    elif not is_doctor(id_zdravnika):
-       return
-    else:
-        return
+        print(is_vaxed(id_pacienta))
+        redirect(url("pacient_certificate", x=x))
+    # TODO pohendlaj kaj se zgodi če nemoreš cepit pacienta   
+    # elif not is_doctor(id_zdravnika):
+    #   return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=id_cepiva, napaka="Nimate ustrezne avtorizacije za cepljenje.")
+    # else:
+    #    return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=id_cepiva, napaka="Nimate ustrezne avtorizacije za cepljenje tega pacienta.")
 
 ######################################################################
 # Glavni program
