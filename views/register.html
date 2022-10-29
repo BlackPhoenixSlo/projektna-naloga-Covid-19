@@ -1,3 +1,5 @@
+%rebase('base.html', naslov='Pacienti')
+
 <!doctype html>
 <html lang="en">
 
@@ -21,11 +23,11 @@
       user-select: none;
     }
 
-    @media (min-width: 768px) {
+     @media (min-width: 768px) {
       .bd-placeholder-img-lg {
         font-size: 3.5rem;
       }
-    }
+    } 
 
     .b-example-divider {
       height: 3rem;
@@ -66,84 +68,84 @@
   </style>
 
 
-  <!-- Custom styles for this template -->
-  <link href="/static/form-validation.css" rel="stylesheet">
+ <!-- Custom styles for this template -->
+ <link href="/static/form-validation.css" rel="stylesheet">
 </head>
 
 
-<div class="container">
-  <main>
-    <div class="py-5 text-center">
-      <img class="d-block mx-auto mb-4" src="/static/android-chrome-192x192.png" alt="" width="192" height="192">
-      <h2>Registracija</h2>
-      <p class="lead">Spodaj pripravljena forma vam kot prebivalcu Slovenije omogoča registracijo v portal, kjer si
-        lahko pogledate svoje podatke. Zdravnikom omogoča tudi vplogled v kartoteko svojih pacientov, ki jih lahko
-        urejajo.</p>
-    </div>
+  <div class="container">
+    <main>
+      <div class="py-5 text-center">
+        <h2>Registracija</h2>
+        <p class="lead">
+          Spodaj pripravljena forma vam kot prebivalcu Slovenije omogoča registracijo v portal, kjer si
+          lahko pogledate svoje podatke. Zdravnikom omogoča tudi vplogled v kartoteko svojih pacientov, ki jih lahko
+          urejajo.</p>
+      </div>
 
-    %if napaka:
-    <div class="alert alert-danger" role="alert">
-      {{napaka}}
-    </div>
-    %end
+      %if napaka:
+      <div class="alert alert-danger" role="alert">
+        {{napaka}}
+      </div>
+      %end
 
-    <div class="px-4">
-      <h4 class="mb-3">Splošni podatki</h4>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col px-5">
-        <form class="needs-validation" novalidate>
-          <div>
-            <label for="firstName" class="form-label">Ime</label>
-            <input type="text" class="form-control" id="ime" name="ime" value="" required>
-            <div class="invalid-feedback">
-              Potrebno je izbrati veljavno ime.
-            </div>
-          </div>
-          <div>
-            <label for="lastName" class="form-label">Priimek</label>
-            <input type="text" class="form-control" id="priimek" name="priimek" value="" required>
-            <div class="invalid-feedback">
-              Potrebno je izbrati veljavni priimek.
-            </div>
-          </div>
-          <div>
-            <label for="emso" class="form-label">Emšo</label>
-            <input type="text" class="form-control" id="emso" name="emso" value="" required>
-            <div class="invalid-feedback">
-              Potrebno je izbrati veljavno emšo številko.
-            </div>
-          </div>
-          <div>
-            <label for="username" class="form-label">Uporabniško ime</label>
-            <div class="input-group has-validation">
-              <span class="input-group-text">@</span>
-              <input type="text" class="form-control" id="username" name="username" required>
+      <div class="px-4">
+        <h4 class="mb-3">Splošni podatki</h4>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col px-5">
+          <form class="needs-validation", method="post", action=".">
+            <div>
+              <label for="firstName" class="form-label">Ime</label>
+              <input type="text" class="form-control" id="ime" name="ime" value="" required>
               <div class="invalid-feedback">
-                Potrebno je izbrati uporabniško ime.
+                Potrebno je izbrati veljavno ime.
               </div>
             </div>
-          </div>
-          <div>
-            <label for="password" class="form-label">Geslo</label>
-            <input type="password" class="form-control" id="password" name="password1" value="" required>
-            <div class="invalid-feedback">
-              Potrebno je izbrati veljavno geslo.
+            <div>
+              <label for="lastName" class="form-label">Priimek</label>
+              <input type="text" class="form-control" id="priimek" name="priimek" value="" required>
+              <div class="invalid-feedback">
+                Potrebno je izbrati veljavni priimek.
+              </div>
             </div>
-          </div>
-          <div>
-            <label for="password1" class="form-label">Potrditev gesla</label>
-            <input type="password" class="form-control" id="password1" name="password2" value="" required>
-            <div class="invalid-feedback">
-              Potrebno je izbrati veljavno geslo.
+            <div>
+              <label for="emso" class="form-label">Emšo</label>
+              <input type="text" class="form-control" id="emso" name="emso" value="" required>
+              <div class="invalid-feedback">
+                Potrebno je izbrati veljavno emšo številko.
+              </div>
             </div>
-          </div>
-          <button class="w-100 btn btn-primary btn-lg mt-4" type="submit">Registracija</button>
-          <a href="{{url('login_get')}}" class="link-secondary">Prijava</a>
-        </form>
+            <div>
+              <label for="username" class="form-label">Uporabniško ime</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" id="username" name="username" required>
+                <div class="invalid-feedback">
+                  Potrebno je izbrati uporabniško ime.
+                </div>
+              </div>
+            </div>
+            <div>
+              <label for="password" class="form-label">Geslo</label>
+              <input type="password" class="form-control" id="password" name="password1" value="" required>
+              <div class="invalid-feedback">
+                Potrebno je izbrati veljavno geslo.
+              </div>
+            </div>
+            <div>
+              <label for="password1" class="form-label">Potrditev gesla</label>
+              <input type="password" class="form-control" id="password1" name="password2" value="" required>
+              <div class="invalid-feedback">
+                Potrebno je izbrati veljavno geslo.
+              </div>
+            </div>
+            <button class="w-100 btn btn-primary btn-lg mt-4" type="submit">Registracija</button>
+            <a href="{{url('login_get')}}" class="link-secondary">Prijava</a>
+          </form>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
 
   <footer class="my-5 pt-5 text-muted text-center text-small">
     <p class="mb-1">&copy; 2022 COVID portal</p>
