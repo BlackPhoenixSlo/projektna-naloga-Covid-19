@@ -88,3 +88,8 @@ INSERT
     ON pacient TO javnost;
 
 GRANT DELETE ON pacient TO javnost;
+
+--- Namenjeno zdravnikom, da lahko cepijo svoje paciente, verifikacija zdravnikov poteka preko 
+GRANT
+INSERT
+    ON cepljenje TO javnost;
