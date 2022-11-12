@@ -166,7 +166,6 @@ def vax_pacient(pacient_id, cepivo_id):
         cur.execute("INSERT INTO cepljenje (id_osebe, id_cepiva, datum_cepljenja) VALUES (%s, %s, %s)",
                 [pacient_id, cepivo_id, today])
         baza.commit()
-        print("Pridem do sem")
     except:
         baza.rollback() 
 
@@ -475,7 +474,6 @@ def vax_post(x, cepivo):
     if (hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
         # Pacienta lahko cepimo tudi če je že cepljen
         vax_pacient(id_pacienta, id_cepiva)
-        print(is_vaxed(id_pacienta))
         redirect(url("pacient_certificate", x=x))
     # TODO pohendlaj kaj se zgodi če nemoreš cepit pacienta   
     # elif not is_doctor(id_zdravnika):
