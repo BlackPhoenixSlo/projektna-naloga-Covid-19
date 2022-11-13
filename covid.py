@@ -120,7 +120,7 @@ def add_to_hospital(pacient_id, hospital_id):
         
     
 def vax_id(id):
-    """Funkcija vrne ime cepiva, če ji podamo id cepljene osebe"""
+    """Funkcija vrne ime cepiva, če ji podamo id cepljene osebe, drugače vrne FALSE"""
     if is_vaxed(id):
         cur.execute(
             "SELECT ime_cepiva FROM cepivo WHERE id_cepiva = (SELECT DISTINCT id_cepiva FROM cepljenje WHERE id_osebe=%s)", [id])
@@ -215,10 +215,13 @@ def list_of_vax():
 
 
 def index_of_vax(vax_name : str) -> int:
+    """Funkcija vrača id cepiva, če mu podamo ime"""
     cur.execute(
-        "SELECT id_cepiva FROM cepivo where ime_cepiva=%s", [vax_name]
-    )
+            "SELECT id_cepiva FROM cepivo where ime_cepiva=%s", [vax_name]
+        )
     return cur.fetchone()[0]
+    
+    
     
 
 
@@ -441,8 +444,8 @@ def remove_get():
 def remove_post(x):
     """Odstrani pacienta"""
     id_uporabnika = get_user()
-    if is_doctor(id_uporabnika):
-        id = get_id_from(x)
+    id = get_id_from(x)
+    if is_doctor(id_uporabnika) and hospital_id(id_uporabnika) == hospital_id(id):
         try:
             delete_pacient(id)
         except:
@@ -450,8 +453,7 @@ def remove_post(x):
         else:
             redirect(url("remove_get"))
     else:
-        # TODO naredi napako na vrhu htmlja
-        return
+        return template("user.html", get_my_profile(id_uporabnika), is_doctor=is_doctor(id_uporabnika), is_vaxed=is_vaxed(id_uporabnika), is_tested=is_tested(id_uporabnika), hospital_name=hospital_name(id_uporabnika), id=id_uporabnika, vax_id = vax_id(id_uporabnika), napaka="Nimate ustreznih pooblastil za odstranjevanje pacienta")
 
 
 @route("/vax_pacient/<x>")
@@ -463,23 +465,31 @@ def vax_get(x):
     cepiva = list_of_vax()
     if is_doctor(id_uporabnika):
         return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka=None)
+    else:
+        return template("user.html", get_my_profile(id), is_doctor=is_doctor(id), is_vaxed=is_vaxed(id), is_tested=is_tested(id), hospital_name=hospital_name(id), id=id, vax_id = vax_id(id), napaka="Nimate pravic za te strani")
+
 
 
 
 @route("/vax_pacient/<x>/<cepivo>")
 def vax_post(x, cepivo):
+    """Serviraj podatke katero osebo smo cepili s katerim cepivom"""
     id_pacienta = get_id_from(x)
-    id_zdravnika = get_user()
-    id_cepiva = index_of_vax(cepivo)
-    if (hospital_id(id_pacienta) == hospital_id(id_zdravnika) and is_doctor(id_zdravnika)):
+    id_uporabnika = get_user()
+    ime, priimek, emso  = get_my_profile(id_pacienta)[0], get_my_profile(id_pacienta)[1], get_my_profile(id_pacienta)[2]
+    cepiva = list_of_vax()
+    if (hospital_id(id_pacienta) == hospital_id(id_uporabnika) and is_doctor(id_uporabnika)):
         # Pacienta lahko cepimo tudi če je že cepljen
+        try:
+            id_cepiva = index_of_vax(cepivo)
+        except TypeError:
+            return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka="Cepivo ne obstaja")
         vax_pacient(id_pacienta, id_cepiva)
         redirect(url("pacient_certificate", x=x))
-    # TODO pohendlaj kaj se zgodi če nemoreš cepit pacienta   
-    # elif not is_doctor(id_zdravnika):
-    #   return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=id_cepiva, napaka="Nimate ustrezne avtorizacije za cepljenje.")
-    # else:
-    #    return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=id_cepiva, napaka="Nimate ustrezne avtorizacije za cepljenje tega pacienta.")
+    elif not is_doctor(id_uporabnika):
+       return template("user.html", get_my_profile(id_uporabnika), is_doctor=is_doctor(id_uporabnika), is_vaxed=is_vaxed(id_uporabnika), is_tested=is_tested(id_uporabnika), hospital_name=hospital_name(id_uporabnika), id=id_uporabnika, vax_id = vax_id(id_uporabnika), napaka="Nimate pravic za te strani")
+    else:
+        return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka="Pacient ni v vaši bolnišnici")
 
 ######################################################################
 # Glavni program
