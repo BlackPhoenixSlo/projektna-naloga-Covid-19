@@ -1,12 +1,13 @@
 %rebase('base.html', naslov='Prijava')
+<div class = "container">
+  %if napaka:
+<div class="alert alert-danger" role="alert">
+  {{napaka}}
+</div>
+%end
 <body class="text-center">
-    
+ 
   <main class="form-signin w-100 m-auto">
-    %if napaka:
-    <div class="alert alert-danger" role="alert">
-      {{napaka}}
-    </div>
-    %end
     <form method="post" action=".">
       <img class="mb-4" src="\static\android-chrome-192x192.png" alt="" width="192" height="192">
       <h1 class="h3 mb-3 fw-normal">Prijava</h1>
@@ -27,3 +28,4 @@
   
   
 </body>
+</div>
