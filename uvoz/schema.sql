@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS bolnisnica (
 CREATE TABLE IF NOT EXISTS uporabnik (
     username TEXT PRIMARY KEY,
     password TEXT NOT NULL,
-    id_osebe INTEGER REFERENCES oseba(id_osebe)
+    id_osebe INTEGER UNIQUE REFERENCES oseba(id_osebe)
 );
 
 CREATE TABLE IF NOT EXISTS pacient (
