@@ -350,6 +350,7 @@ def register_post():
             redirect(url("login_get"))
 
 
+
 @route("/logout/")
 def logout():
     """Pobriši cookie in preusmeri na login."""
@@ -373,15 +374,16 @@ def add_pacient_post():
     priimek = request.forms.priimek
     emso = request.forms.emso
     doctor_id = get_user()
-    if verify_user(ime, priimek, emso):
+    try: 
+        verify_user(ime, priimek, emso)
         try:
             add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
         except:
             return template("add_pacient.html", ime=ime, priimek=priimek, emso=emso, napaka="Pacient je že v bolnišnici")
         else:
             redirect(url("remove_get"))
-    else: 
-        return template("add_pacient.html", ime=None, priimek=None, emso=None, napaka="Podatki pacienta se ne ujemajo")
+    except ValueError:
+        return template("add_pacient.html", ime=ime, priimek=priimek, emso=emso, napaka="Podatki pacienta se ne ujemajo.")
 
 
 
