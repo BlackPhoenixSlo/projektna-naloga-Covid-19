@@ -26,6 +26,12 @@ uporabniško ime: `neja`
 geslo: `neja`
 
 
+### neregistrirana oseba
+ime: `Irena`
+priimek: `Juteršnik`
+emšo: `0607003505685`
+
+
 ### Opombe
  - Svojih računov z lastnimi podatki ni mogoče kreirati, saj aplikacija v odzadju preverja ali so dani podatki res v bazi prebivalstva
  - Spodnji ER diagram je od iz začetka izdelave projekta, zato sem pripravil sem diagram vseh tabel v SQL-u in kakšne so povezave med njimi
