@@ -200,6 +200,8 @@ def verify_user(ime, priimek, emso):
     """Funkcija preverja, če se ime, priimek in emso skladajo s podatki iz baze."""
     cur.execute(
         "SELECT exists (SELECT * FROM oseba WHERE ime=%s AND priimek=%s AND emso=%s)", [ime, priimek, emso])
+    if not cur.fetchone()[0]:
+        raise ValueError("Podatki se ne skladajo s podatki iz baze")
     return cur.fetchone()[0]
 
 
@@ -221,9 +223,6 @@ def index_of_vax(vax_name : str) -> int:
         )
     return cur.fetchone()[0]
     
-    
-    
-
 
 def generate_qr(id):
     """Funkcija ne vrača ničesar, zgenerira pa qr kodo specifično glede na uporabnika"""
@@ -235,7 +234,6 @@ def generate_qr(id):
     else:
         # TODO treba je pogledat da je bil vsaj negativen - mogoče nit trenutno ni tako pomembno
         qr_pct = "{ime} {priimek} \n {stalno_prebivalisce} \n {datum}".format(ime=profile[0], priimek=profile[1], stalno_prebivalisce=profile[3], datum=test_last_date(id)) 
-
         img = qrcode.make(qr_pct)
         img.save('static/user_qrcodes/user_{0}.png'.format(id))
 
@@ -330,38 +328,26 @@ def register_post():
                         priimek=priimek,
                         napaka='Gesli se ne ujemata')
     else:
-        cur.execute("SELECT 1 FROM uporabnik WHERE id_osebe=%s", [get_id_from(emso)])
-        if cur.fetchone():
+    # Uporabnik še ne obstaja
+        try:
+            verify_user(ime, priimek, emso)
+        except ValueError:
+            # Uporabnik ni vnesel pravilnih podatkov
             return template("register.html",
-                username=username,
-                emso=emso,
-                ime=ime,
-                priimek=priimek,
-                napaka='Ta oseba je že registrirana v portal')
-        elif verify_user(ime, priimek, emso):
-            password = password_hash(password1)
-            try:
-                id = get_id_from(emso)
-                cur.execute("INSERT INTO uporabnik (username, password, id_osebe) VALUES (%s, %s, %s)", [
-                            username, password, id])
-                baza.commit()
-            except TypeError:
-                return template("register.html",
-                                username=username,
-                                emso=emso,
-                                ime=ime,
-                                priimek=priimek,
-                                napaka='Dane emšo stevilke ni v bazi oseb. Prepričajte se na upravni enoti.')
-            # Daj uporabniku cookie
-            response.set_cookie('username', username, path='/', secret=secret)
-            redirect(url("login_get"))
+                    username=username,
+                    emso=emso,
+                    ime=ime,
+                    priimek=priimek,
+                    napaka='Vneseni podatki niso bili najdeni v bazi prebivalstva. Prepričajte se na upravni enoti.')
         else:
-            return template("register.html",
-                                username=username,
-                                emso=emso,
-                                ime=ime,
-                                priimek=priimek,
-                                napaka='Podatki med seboj se ne ujemajo. Prepričajte se na upravni enoti.')
+            # Uporabnikško ime in geslo sta OK, prav tako tudi podatki iz baze prebivalstva.
+            password = password_hash(password1)
+            cur.execute("INSERT INTO uporabnik (username, password, id_osebe) VALUES (%s, %s, %s)", [username, password, get_id_from(emso)] )
+            baza.commit()
+            # Uspešno prijavljen uporabnik, uporabniku damo cookie
+            response.set_cookie('username', username, path='/', secret=secret)
+            # Preusmeritev na login page
+            redirect(url("login_get"))
 
 
 @route("/logout/")
