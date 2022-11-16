@@ -123,7 +123,7 @@ def vax_id(id):
     """Funkcija vrne ime cepiva, če ji podamo id cepljene osebe, drugače vrne FALSE"""
     if is_vaxed(id):
         cur.execute(
-            "SELECT ime_cepiva FROM cepivo WHERE id_cepiva = (SELECT DISTINCT id_cepiva FROM cepljenje WHERE id_osebe=%s)", [id])
+            "SELECT ime_cepiva FROM cepivo WHERE id_cepiva = (SELECT id_cepiva FROM cepljenje WHERE id_osebe=%s ORDER BY datum_cepljenja DESC LIMIT 1)", [id])
         return cur.fetchone()[0]
     else:
         return False
@@ -200,9 +200,10 @@ def verify_user(ime, priimek, emso):
     """Funkcija preverja, če se ime, priimek in emso skladajo s podatki iz baze."""
     cur.execute(
         "SELECT exists (SELECT * FROM oseba WHERE ime=%s AND priimek=%s AND emso=%s)", [ime, priimek, emso])
-    if not cur.fetchone()[0]:
+    bool = cur.fetchone()[0]
+    if not bool:
         raise ValueError("Podatki se ne skladajo s podatki iz baze")
-    return cur.fetchone()[0]
+    return bool
 
 
 def list_of_vax():
@@ -380,14 +381,14 @@ def add_pacient_post():
             add_to_hospital(get_id_from(emso), hospital_id(doctor_id))
         except:
             return template("add_pacient.html", ime=ime, priimek=priimek, emso=emso, napaka="Pacient je že v bolnišnici")
-        else:
-            redirect(url("remove_get"))
     except ValueError:
         return template("add_pacient.html", ime=ime, priimek=priimek, emso=emso, napaka="Podatki pacienta se ne ujemajo.")
+    else:
+        redirect(url("remove_get"))
 
 
 
-@route('/pct_certificate/<x>')
+@route('/pct_certificate/<x>/')
 def pacient_certificate(x):
     """Serviraj formo za pacientovo PCT potrdilo"""
     id = get_user()
@@ -444,7 +445,7 @@ def remove_post(x):
         return template("user.html", get_my_profile(id_uporabnika), is_doctor=is_doctor(id_uporabnika), is_vaxed=is_vaxed(id_uporabnika), is_tested=is_tested(id_uporabnika), hospital_name=hospital_name(id_uporabnika), id=id_uporabnika, vax_id = vax_id(id_uporabnika), napaka="Nimate ustreznih pooblastil za odstranjevanje pacienta")
 
 
-@route("/vax_pacient/<x>")
+@route("/vax_pacient/<x>/")
 def vax_get(x):
     """Serviraj formo za cepljenje danega pacienta"""
     id_uporabnika = get_user()
@@ -459,7 +460,7 @@ def vax_get(x):
 
 
 
-@route("/vax_pacient/<x>/<cepivo>")
+@route("/vax_pacient/<x>/<cepivo>/")
 def vax_post(x, cepivo):
     """Serviraj podatke katero osebo smo cepili s katerim cepivom"""
     id_pacienta = get_id_from(x)
@@ -472,7 +473,10 @@ def vax_post(x, cepivo):
             id_cepiva = index_of_vax(cepivo)
         except TypeError:
             return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka="Cepivo ne obstaja")
-        vax_pacient(id_pacienta, id_cepiva)
+        try:
+            vax_pacient(id_pacienta, id_cepiva)
+        except psycopg2.errors.InFailedSqlTransaction:
+            return template("vax.html", ime=ime, priimek=priimek, emso=emso, cepiva=cepiva, napaka="Pacient je že cepljen")
         redirect(url("pacient_certificate", x=x))
     elif not is_doctor(id_uporabnika):
        return template("user.html", get_my_profile(id_uporabnika), is_doctor=is_doctor(id_uporabnika), is_vaxed=is_vaxed(id_uporabnika), is_tested=is_tested(id_uporabnika), hospital_name=hospital_name(id_uporabnika), id=id_uporabnika, vax_id = vax_id(id_uporabnika), napaka="Nimate pravic za te strani")
