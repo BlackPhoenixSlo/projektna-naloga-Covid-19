@@ -15,21 +15,30 @@ uporabniško ime: `admin`
 
 geslo: `admin`
 
-### cepljen pacient
+### cepljena oseba
 uporabniško ime: `tadej`
 
 geslo: `tadej`
 
-### pacient brez pctja
+### oseba brez pctja
 uporabniško ime: `neja`
 
 geslo: `neja`
 
-
 ### neregistrirana oseba
 ime: `Irena`
+
 priimek: `Juteršnik`
+
 emšo: `0607003505685`
+
+### oseba, ki jo lahko sprejmemo v bolnišnico
+ime: `Tadej`
+
+priimek: `Hudžar`
+
+emšo: `2607995500554`
+
 
 
 ### Opombe
